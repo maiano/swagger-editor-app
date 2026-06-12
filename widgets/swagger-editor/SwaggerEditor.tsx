@@ -1,75 +1,47 @@
 "use client";
 
 import { AlertTriangleIcon, CheckCircle2Icon, Loader2Icon } from "lucide-react";
-import { useState } from "react";
 
 import { parseOpenApiSchema } from "@/entities/openapi-document/model";
-import { detectSchemaFormat } from "@/entities/schema/model";
+import { useOpenApiWorkspace } from "@/features/openapi-workspace/model";
 import { Badge } from "@/shared/ui/badge";
 import { Button } from "@/shared/ui/button";
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 
 import { CodeEditor } from "./CodeEditor";
 
-const INITIAL_SCHEMA = `openapi: 3.0.0
-info:
-  title: Pets
-  version: 1.0.0
-servers:
-  - url: https://api.example.com
-paths:
-  /pets:
-    get:
-      summary: List pets
-      responses:
-        "200":
-          description: OK
-`;
-
-type ValidationState =
-  | { status: "idle"; message: string }
-  | { status: "valid"; message: string; endpointCount: number }
-  | { status: "invalid"; message: string };
-
 export function SwaggerEditor() {
-  const [schemaText, setSchemaText] = useState(INITIAL_SCHEMA);
-  const [validationState, setValidationState] = useState<ValidationState>({
-    status: "idle",
-    message: "Ready",
-  });
-  const [isValidating, setIsValidating] = useState(false);
-  const format = detectSchemaFormat(schemaText);
+  const workspace = useOpenApiWorkspace();
+  const isValidating = workspace.status === "validating";
 
   async function validateCurrentSchema() {
-    const trimmedText = schemaText.trim();
+    const trimmedText = workspace.schemaText.trim();
 
     if (!trimmedText) {
-      setValidationState({
-        status: "invalid",
-        message: "Schema text is empty",
-      });
+      workspace.setStatus("invalid");
+      workspace.setError("Schema text is empty");
+      workspace.setDocument(null);
+      workspace.setSelectedEndpointId(null);
       return;
     }
 
-    setIsValidating(true);
+    workspace.setStatus("validating");
+    workspace.setError(null);
 
     const result = await parseOpenApiSchema(trimmedText);
 
     if (!result.ok) {
-      setValidationState({
-        status: "invalid",
-        message: result.error,
-      });
-      setIsValidating(false);
+      workspace.setStatus("invalid");
+      workspace.setError(result.error);
+      workspace.setDocument(null);
+      workspace.setSelectedEndpointId(null);
       return;
     }
 
-    setValidationState({
-      status: "valid",
-      message: `${result.document.title} ${result.document.version}`,
-      endpointCount: result.document.endpoints.length,
-    });
-    setIsValidating(false);
+    workspace.setStatus("valid");
+    workspace.setError(null);
+    workspace.setDocument(result.document);
+    workspace.setSelectedEndpointId(result.document.endpoints[0]?.id ?? null);
   }
 
   return (
@@ -78,12 +50,12 @@ export function SwaggerEditor() {
         <CardTitle>Swagger/OpenAPI Editor</CardTitle>
         <CardAction className="flex items-center gap-2">
           <Badge variant="outline" className="uppercase">
-            {format}
+            {workspace.schemaFormat}
           </Badge>
           <Button
             type="button"
             onClick={validateCurrentSchema}
-            disabled={isValidating || !schemaText.trim()}
+            disabled={isValidating || !workspace.schemaText.trim()}
           >
             {isValidating ? (
               <Loader2Icon className="animate-spin" data-icon="inline-start" />
@@ -93,38 +65,58 @@ export function SwaggerEditor() {
         </CardAction>
       </CardHeader>
       <CardContent className="grid gap-3 pt-4">
-        <CodeEditor value={schemaText} format={format} onChange={setSchemaText} />
-        <ValidationStatus state={validationState} />
+        <CodeEditor
+          value={workspace.schemaText}
+          format={workspace.schemaFormat}
+          onChange={workspace.setSchemaText}
+        />
+        <ValidationStatus
+          status={workspace.status}
+          error={workspace.error}
+          title={workspace.document?.title}
+          version={workspace.document?.version}
+          endpointCount={workspace.document?.endpoints.length ?? 0}
+        />
       </CardContent>
     </Card>
   );
 }
 
-function ValidationStatus({ state }: { state: ValidationState }) {
-  if (state.status === "valid") {
+interface ValidationStatusProps {
+  status: "idle" | "validating" | "valid" | "invalid";
+  error: string | null;
+  title?: string;
+  version?: string;
+  endpointCount: number;
+}
+
+function ValidationStatus({ status, error, title, version, endpointCount }: ValidationStatusProps) {
+  if (status === "valid") {
     return (
       <div className="border-status-success/30 bg-status-success/10 text-status-success flex items-center justify-between gap-3 rounded-md border px-3 py-2 text-sm">
         <span className="inline-flex min-w-0 items-center gap-2">
           <CheckCircle2Icon className="size-4 shrink-0" />
-          <span className="truncate">{state.message}</span>
+          <span className="truncate">
+            {title} {version}
+          </span>
         </span>
-        <span className="font-mono text-xs">{state.endpointCount} endpoints</span>
+        <span className="font-mono text-xs">{endpointCount} endpoints</span>
       </div>
     );
   }
 
-  if (state.status === "invalid") {
+  if (status === "invalid") {
     return (
       <div className="border-status-error/30 bg-status-error/10 text-status-error flex items-start gap-2 rounded-md border px-3 py-2 text-sm">
         <AlertTriangleIcon className="mt-0.5 size-4 shrink-0" />
-        <span>{state.message}</span>
+        <span>{error}</span>
       </div>
     );
   }
 
   return (
     <div className="border-border bg-muted/30 text-muted-foreground rounded-md border px-3 py-2 text-sm">
-      {state.message}
+      {status === "validating" ? "Validating..." : "Ready"}
     </div>
   );
 }
