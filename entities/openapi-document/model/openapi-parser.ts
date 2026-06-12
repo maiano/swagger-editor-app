@@ -1,46 +1,51 @@
 import SwaggerParser from "@apidevtools/swagger-parser";
 import type { OpenAPI } from "openapi-types";
 
-export interface ValidateOpenApiSuccess {
+import { getOpenApiErrorMessage, OpenApiParseError } from "./errors";
+import { isPlainObject } from "./normalize-common";
+
+export interface PrepareExternalOpenApiSuccess {
   ok: true;
   document: OpenAPI.Document;
 }
 
-export interface ValidateOpenApiFailure {
+export interface PrepareExternalOpenApiFailure {
   ok: false;
   error: string;
 }
 
-export type ValidateOpenApiDocumentResult = ValidateOpenApiSuccess | ValidateOpenApiFailure;
+export type PrepareExternalOpenApiDocumentResult =
+  | PrepareExternalOpenApiSuccess
+  | PrepareExternalOpenApiFailure;
 
-function isObjectLike(value: unknown): value is object {
-  return typeof value === "object" && value !== null;
-}
-
-function getErrorMessage(error: unknown): string {
-  if (error instanceof Error && error.message) {
-    return error.message;
-  }
-
-  return "Invalid OpenAPI document";
-}
-
-export async function validateOpenApiDocument(
+export async function validateAndDereferenceOpenApiDocument(
   value: unknown
-): Promise<ValidateOpenApiDocumentResult> {
-  if (!isObjectLike(value)) {
-    return {
-      ok: false,
-      error: "Invalid OpenAPI document",
-    };
+): Promise<OpenAPI.Document> {
+  if (!isPlainObject(value)) {
+    throw new OpenApiParseError("OpenAPI document must be an object");
   }
 
+  const parser = new SwaggerParser();
+  const document = value as OpenAPI.Document;
+  const options = {
+    resolve: {
+      external: false,
+    },
+    dereference: {
+      circular: "ignore",
+    },
+  } as const;
+
+  await parser.validate(document, options);
+
+  return parser.dereference(document, options);
+}
+
+export async function prepareExternalOpenApiDocument(
+  value: unknown
+): Promise<PrepareExternalOpenApiDocumentResult> {
   try {
-    const document = await SwaggerParser.validate(value as OpenAPI.Document, {
-      resolve: {
-        external: false,
-      },
-    });
+    const document = await validateAndDereferenceOpenApiDocument(value);
 
     return {
       ok: true,
@@ -49,7 +54,7 @@ export async function validateOpenApiDocument(
   } catch (error) {
     return {
       ok: false,
-      error: getErrorMessage(error),
+      error: getOpenApiErrorMessage(error),
     };
   }
 }

@@ -2,15 +2,30 @@ export type HttpMethod = "get" | "post" | "put" | "patch" | "delete" | "head" | 
 
 export type OpenApiParameterLocation = "path" | "query" | "header" | "cookie";
 
+export type ExternalOpenApiVersion = "swagger2" | "openapi3";
+
+export type JsonSchemaLike = unknown;
+
+export type OpenApiExampleValue = unknown;
+
 export interface OpenApiDocument {
+  sourceVersion: ExternalOpenApiVersion;
   title: string;
   version: string;
+  description?: string;
   servers: OpenApiServer[];
   endpoints: OpenApiEndpoint[];
 }
 
 export interface OpenApiServer {
   url: string;
+  description?: string;
+  variables?: Record<string, OpenApiServerVariable>;
+}
+
+export interface OpenApiServerVariable {
+  default: string;
+  enum?: string[];
   description?: string;
 }
 
@@ -26,6 +41,7 @@ export interface OpenApiEndpoint {
   requestBody?: OpenApiRequestBody;
   responses: OpenApiResponse[];
   serverUrl?: string;
+  deprecated?: boolean;
 }
 
 export interface OpenApiParameter {
@@ -33,8 +49,8 @@ export interface OpenApiParameter {
   in: OpenApiParameterLocation;
   required: boolean;
   description?: string;
-  schema?: unknown;
-  example?: unknown;
+  schema?: JsonSchemaLike;
+  example?: OpenApiExampleValue;
 }
 
 export interface OpenApiRequestBody {
@@ -43,9 +59,9 @@ export interface OpenApiRequestBody {
 }
 
 export interface OpenApiMediaType {
-  schema?: unknown;
-  example?: unknown;
-  examples?: Record<string, unknown>;
+  schema?: JsonSchemaLike;
+  example?: OpenApiExampleValue;
+  examples?: Record<string, OpenApiExampleValue>;
 }
 
 export interface OpenApiResponse {
