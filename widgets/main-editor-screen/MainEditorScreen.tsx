@@ -1,11 +1,13 @@
 import { OpenApiWorkspaceProvider } from "@/features/openapi-workspace/model";
 import { SwaggerEditor } from "@/widgets/swagger-editor";
+import { SwaggerViewer } from "@/widgets/swagger-viewer";
 
 export function MainEditorScreen() {
   return (
     <OpenApiWorkspaceProvider>
-      <section className="grid gap-4">
+      <section className="grid gap-4 xl:grid-cols-[minmax(0,1.15fr)_minmax(360px,0.85fr)]">
         <SwaggerEditor />
+        <SwaggerViewer />
       </section>
     </OpenApiWorkspaceProvider>
   );
