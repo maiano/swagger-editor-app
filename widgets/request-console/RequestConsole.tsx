@@ -8,12 +8,16 @@ import {
   type RequestModel,
 } from "@/entities/openapi-document/model";
 import { useOpenApiWorkspace } from "@/features/openapi-workspace/model";
+import type { RequestDraft } from "@/features/openapi-workspace/model";
 import { Badge } from "@/shared/ui/badge";
 import { Button } from "@/shared/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/ui/card";
+import { Input } from "@/shared/ui/input";
+import { Textarea } from "@/shared/ui/textarea";
 
 export function RequestConsole() {
-  const { document, selectedEndpoint } = useOpenApiWorkspace();
+  const { document, selectedEndpoint, requestDraftsByEndpointId, setRequestDraft } =
+    useOpenApiWorkspace();
 
   if (!document || !selectedEndpoint) {
     return (
@@ -26,8 +30,15 @@ export function RequestConsole() {
     );
   }
 
-  const request = createInitialRequestModel(selectedEndpoint);
+  const selectedEndpointId = selectedEndpoint.id;
+  const draft =
+    requestDraftsByEndpointId[selectedEndpointId] ?? createInitialRequestDraft(selectedEndpoint);
+  const request = createRequestModel(selectedEndpoint, draft);
   const curl = buildCurlCommand(request);
+
+  function updateDraft(value: RequestDraft) {
+    setRequestDraft(selectedEndpointId, value);
+  }
 
   return (
     <Card className="border-panel-border bg-panel text-panel-foreground">
@@ -43,7 +54,7 @@ export function RequestConsole() {
             </span>
             <code className="break-all">{selectedEndpoint.path}</code>
           </div>
-          <RequestParameterSummary endpoint={selectedEndpoint} />
+          <RequestDraftForm endpoint={selectedEndpoint} draft={draft} onChange={updateDraft} />
         </div>
         <section className="grid gap-2">
           <div className="flex items-center justify-between gap-2">
@@ -66,7 +77,15 @@ export function RequestConsole() {
   );
 }
 
-function RequestParameterSummary({ endpoint }: { endpoint: OpenApiEndpoint }) {
+function RequestDraftForm({
+  endpoint,
+  draft,
+  onChange,
+}: {
+  endpoint: OpenApiEndpoint;
+  draft: RequestDraft;
+  onChange: (value: RequestDraft) => void;
+}) {
   if (endpoint.parameters.length === 0 && !endpoint.requestBody) {
     return (
       <div className="border-border bg-muted/20 text-muted-foreground rounded-md border px-3 py-2 text-xs">
@@ -75,39 +94,153 @@ function RequestParameterSummary({ endpoint }: { endpoint: OpenApiEndpoint }) {
     );
   }
 
+  const pathParameters = endpoint.parameters.filter((parameter) => parameter.in === "path");
+  const queryParameters = endpoint.parameters.filter((parameter) => parameter.in === "query");
+  const headerParameters = endpoint.parameters.filter((parameter) => parameter.in === "header");
+
   return (
-    <div className="grid gap-2 text-xs">
-      {endpoint.parameters.length > 0 ? (
-        <div className="flex flex-wrap gap-1.5">
-          {endpoint.parameters.map((parameter) => (
-            <Badge key={`${parameter.in}:${parameter.name}`} variant="outline">
-              {parameter.in}:{parameter.name}
-              {parameter.required ? " *" : ""}
-            </Badge>
-          ))}
-        </div>
-      ) : null}
+    <div className="grid gap-3">
+      <ParameterInputs
+        title="Path"
+        values={draft.pathParams}
+        parameters={pathParameters}
+        onChange={(pathParams) => onChange({ ...draft, pathParams })}
+      />
+      <ParameterInputs
+        title="Query"
+        values={draft.query}
+        parameters={queryParameters}
+        onChange={(query) => onChange({ ...draft, query })}
+      />
+      <ParameterInputs
+        title="Headers"
+        values={draft.headers}
+        parameters={headerParameters}
+        onChange={(headers) => onChange({ ...draft, headers })}
+      />
       {endpoint.requestBody ? (
-        <Badge variant="secondary">
-          body:{Object.keys(endpoint.requestBody.content).join(", ")}
-        </Badge>
+        <section className="grid gap-2">
+          <div className="flex flex-wrap items-center gap-2">
+            <h3 className="text-sm">Body</h3>
+            <Badge variant="secondary">
+              {Object.keys(endpoint.requestBody.content).join(", ")}
+            </Badge>
+          </div>
+          <Textarea
+            value={draft.bodyText}
+            rows={6}
+            className="font-mono text-xs"
+            onChange={(event) => onChange({ ...draft, bodyText: event.target.value })}
+          />
+        </section>
       ) : null}
     </div>
   );
 }
 
-function createInitialRequestModel(endpoint: OpenApiEndpoint): RequestModel {
+function ParameterInputs({
+  title,
+  parameters,
+  values,
+  onChange,
+}: {
+  title: string;
+  parameters: OpenApiEndpoint["parameters"];
+  values: Record<string, string>;
+  onChange: (value: Record<string, string>) => void;
+}) {
+  if (parameters.length === 0) {
+    return null;
+  }
+
+  return (
+    <section className="grid gap-2">
+      <h3 className="text-sm">{title}</h3>
+      <div className="grid gap-2">
+        {parameters.map((parameter) => (
+          <label key={`${parameter.in}:${parameter.name}`} className="grid gap-1">
+            <span className="text-muted-foreground flex items-center gap-2 text-xs">
+              <span>{parameter.name}</span>
+              {parameter.required ? <Badge variant="outline">required</Badge> : null}
+            </span>
+            <Input
+              value={values[parameter.name] ?? ""}
+              placeholder={parameter.description}
+              onChange={(event) =>
+                onChange({
+                  ...values,
+                  [parameter.name]: event.target.value,
+                })
+              }
+            />
+          </label>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function createInitialRequestDraft(endpoint: OpenApiEndpoint): RequestDraft {
+  return {
+    pathParams: createEmptyParameterValues(endpoint, "path"),
+    query: createEmptyParameterValues(endpoint, "query"),
+    headers: createEmptyParameterValues(endpoint, "header"),
+    bodyText: endpoint.requestBody ? "{}" : "",
+  };
+}
+
+function createRequestModel(endpoint: OpenApiEndpoint, draft: RequestDraft): RequestModel {
   const baseUrl = endpoint.serverUrl ?? "";
+  const path = resolvePathParams(endpoint.path, draft.pathParams);
+  const query = removeEmptyValues(draft.query);
+  const resolvedUrl = appendQueryString(`${baseUrl}${path}`, query);
+  const body = draft.bodyText.trim().length > 0 ? draft.bodyText : undefined;
 
   return {
     endpointId: endpoint.id,
     method: endpoint.method,
     path: endpoint.path,
-    resolvedUrl: `${baseUrl}${endpoint.path}`,
-    headers: {},
-    query: {},
-    pathParams: {},
+    resolvedUrl,
+    headers: removeEmptyValues(draft.headers),
+    query,
+    pathParams: removeEmptyValues(draft.pathParams),
     cookies: {},
-    body: endpoint.requestBody ? {} : undefined,
+    body,
   };
+}
+
+function createEmptyParameterValues(
+  endpoint: OpenApiEndpoint,
+  location: "path" | "query" | "header"
+): Record<string, string> {
+  return Object.fromEntries(
+    endpoint.parameters
+      .filter((parameter) => parameter.in === location)
+      .map((parameter) => [parameter.name, ""])
+  );
+}
+
+function removeEmptyValues(values: Record<string, string>): Record<string, string> {
+  return Object.fromEntries(Object.entries(values).filter(([, value]) => value.trim().length > 0));
+}
+
+function resolvePathParams(path: string, pathParams: Record<string, string>): string {
+  return Object.entries(pathParams).reduce(
+    (resolvedPath, [name, value]) =>
+      value.trim().length > 0
+        ? resolvedPath.replaceAll(`{${name}}`, encodeURIComponent(value))
+        : resolvedPath,
+    path
+  );
+}
+
+function appendQueryString(url: string, query: Record<string, string>): string {
+  const params = new URLSearchParams(query);
+  const queryString = params.toString();
+
+  if (!queryString) {
+    return url;
+  }
+
+  return `${url}${url.includes("?") ? "&" : "?"}${queryString}`;
 }

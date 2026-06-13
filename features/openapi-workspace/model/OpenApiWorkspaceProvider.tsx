@@ -5,7 +5,11 @@ import { createContext, useContext, useMemo, useState, type ReactNode } from "re
 import type { OpenApiDocument } from "@/entities/openapi-document/model";
 import { detectSchemaFormat, type SchemaFormat } from "@/entities/schema/model";
 
-import type { OpenApiWorkspaceStatus, OpenApiWorkspaceValue } from "./openapi-workspace.types";
+import type {
+  OpenApiWorkspaceStatus,
+  OpenApiWorkspaceValue,
+  RequestDraft,
+} from "./openapi-workspace.types";
 
 const INITIAL_SCHEMA = `openapi: 3.0.0
 info:
@@ -63,6 +67,9 @@ export function OpenApiWorkspaceProvider({
   const [error, setError] = useState<string | null>(null);
   const [document, setDocument] = useState<OpenApiDocument | null>(null);
   const [selectedEndpointId, setSelectedEndpointId] = useState<string | null>(null);
+  const [requestDraftsByEndpointId, setRequestDraftsByEndpointId] = useState<
+    Record<string, RequestDraft>
+  >({});
 
   function setSchemaText(value: string) {
     setSchemaTextState(value);
@@ -72,6 +79,13 @@ export function OpenApiWorkspaceProvider({
   const selectedEndpoint =
     document?.endpoints.find((endpoint) => endpoint.id === selectedEndpointId) ?? null;
 
+  function setRequestDraft(endpointId: string, value: RequestDraft) {
+    setRequestDraftsByEndpointId((drafts) => ({
+      ...drafts,
+      [endpointId]: value,
+    }));
+  }
+
   const value = useMemo(
     () => ({
       schemaText,
@@ -80,6 +94,7 @@ export function OpenApiWorkspaceProvider({
       error,
       document,
       selectedEndpointId,
+      requestDraftsByEndpointId,
       selectedEndpoint,
       setSchemaText,
       setSchemaFormat,
@@ -87,8 +102,18 @@ export function OpenApiWorkspaceProvider({
       setError,
       setDocument,
       setSelectedEndpointId,
+      setRequestDraft,
     }),
-    [schemaText, schemaFormat, status, error, document, selectedEndpointId, selectedEndpoint]
+    [
+      schemaText,
+      schemaFormat,
+      status,
+      error,
+      document,
+      selectedEndpointId,
+      requestDraftsByEndpointId,
+      selectedEndpoint,
+    ]
   );
 
   return (

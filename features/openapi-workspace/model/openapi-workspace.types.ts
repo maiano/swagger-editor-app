@@ -3,6 +3,13 @@ import type { SchemaFormat } from "@/entities/schema/model";
 
 export type OpenApiWorkspaceStatus = "idle" | "validating" | "valid" | "invalid";
 
+export interface RequestDraft {
+  pathParams: Record<string, string>;
+  query: Record<string, string>;
+  headers: Record<string, string>;
+  bodyText: string;
+}
+
 export interface OpenApiWorkspaceState {
   schemaText: string;
   schemaFormat: SchemaFormat;
@@ -10,6 +17,7 @@ export interface OpenApiWorkspaceState {
   error: string | null;
   document: OpenApiDocument | null;
   selectedEndpointId: string | null;
+  requestDraftsByEndpointId: Record<string, RequestDraft>;
 }
 
 export interface OpenApiWorkspaceValue extends OpenApiWorkspaceState {
@@ -20,4 +28,5 @@ export interface OpenApiWorkspaceValue extends OpenApiWorkspaceState {
   setError: (value: string | null) => void;
   setDocument: (value: OpenApiDocument | null) => void;
   setSelectedEndpointId: (value: string | null) => void;
+  setRequestDraft: (endpointId: string, value: RequestDraft) => void;
 }
