@@ -1,13 +1,22 @@
 "use client";
 
 import { ServerIcon } from "lucide-react";
+import { useState } from "react";
 
-import type { OpenApiEndpoint } from "@/entities/openapi-document/model";
+import type {
+  OpenApiEndpoint,
+  OpenApiMediaType,
+  OpenApiParameter,
+  OpenApiParameterLocation,
+  OpenApiResponse,
+} from "@/entities/openapi-document/model";
 import { useOpenApiWorkspace } from "@/features/openapi-workspace/model";
 import { Badge } from "@/shared/ui/badge";
 import { Button } from "@/shared/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select";
 import { Separator } from "@/shared/ui/separator";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/tabs";
 
 export function SwaggerViewer() {
   const { document, selectedEndpoint, selectedEndpointId, setSelectedEndpointId } =
@@ -112,6 +121,9 @@ function EndpointDetails({ endpoint }: { endpoint: OpenApiEndpoint }) {
           value={endpoint.requestBody ? Object.keys(endpoint.requestBody.content).length : 0}
         />
       </div>
+      <ParametersView parameters={endpoint.parameters} />
+      <RequestBodyView content={endpoint.requestBody?.content} />
+      <ResponsesView responses={endpoint.responses} />
     </div>
   );
 }
@@ -127,4 +139,269 @@ function EndpointMeta({ label, value }: { label: string; value: number }) {
 
 function MethodBadge({ method }: { method: OpenApiEndpoint["method"] }) {
   return <span className={`method-badge method-badge--${method}`}>{method}</span>;
+}
+
+function ParametersView({ parameters }: { parameters: OpenApiParameter[] }) {
+  const locations: OpenApiParameterLocation[] = ["path", "query", "header", "cookie"];
+
+  if (parameters.length === 0) {
+    return <EmptySection title="Parameters" message="No parameters." />;
+  }
+
+  return (
+    <section className="grid gap-2">
+      <h3 className="text-sm">Parameters</h3>
+      {locations.map((location) => {
+        const locationParameters = parameters.filter((parameter) => parameter.in === location);
+
+        if (locationParameters.length === 0) {
+          return null;
+        }
+
+        return (
+          <div key={location} className="border-border grid gap-2 rounded-md border p-3">
+            <div className="text-muted-foreground font-mono text-xs uppercase">{location}</div>
+            <div className="grid gap-2">
+              {locationParameters.map((parameter) => (
+                <div
+                  key={`${parameter.in}:${parameter.name}`}
+                  className="bg-muted/20 grid gap-1 rounded-md px-3 py-2"
+                >
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="font-mono text-xs">{parameter.name}</span>
+                    {parameter.required ? <Badge variant="outline">required</Badge> : null}
+                  </div>
+                  {parameter.description ? (
+                    <p className="text-muted-foreground text-xs">{parameter.description}</p>
+                  ) : null}
+                  {parameter.schema !== undefined ? (
+                    <SchemaPreview value={parameter.schema} />
+                  ) : null}
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+      })}
+    </section>
+  );
+}
+
+function RequestBodyView({ content }: { content: Record<string, OpenApiMediaType> | undefined }) {
+  if (!content || Object.keys(content).length === 0) {
+    return <EmptySection title="Request body" message="No request body." />;
+  }
+
+  return (
+    <section className="grid gap-2">
+      <h3 className="text-sm">Request body</h3>
+      <MediaTypeTabs content={content} />
+    </section>
+  );
+}
+
+function ResponsesView({ responses }: { responses: OpenApiResponse[] }) {
+  if (responses.length === 0) {
+    return <EmptySection title="Responses" message="No responses." />;
+  }
+
+  return (
+    <section className="grid gap-2">
+      <h3 className="text-sm">Responses</h3>
+      <div className="grid gap-2">
+        {responses.map((response) => (
+          <div key={response.statusCode} className="border-border grid gap-2 rounded-md border p-3">
+            <div className="flex flex-wrap items-center gap-2">
+              <StatusCodeBadge statusCode={response.statusCode} />
+              {response.description ? (
+                <span className="text-muted-foreground text-xs">{response.description}</span>
+              ) : null}
+            </div>
+            <MediaTypeTabs content={response.content} />
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function MediaTypeTabs({ content }: { content: Record<string, OpenApiMediaType> | undefined }) {
+  const defaultContentType = content ? getDefaultContentType(content) : "";
+  const [selectedContentType, setSelectedContentType] = useState(defaultContentType);
+
+  if (!content || Object.keys(content).length === 0) {
+    return <div className="text-muted-foreground text-xs">No content schema.</div>;
+  }
+
+  const entries = Object.entries(content);
+  const activeContentType =
+    selectedContentType in content ? selectedContentType : defaultContentType;
+  const activeMediaType = content[activeContentType];
+
+  return (
+    <div className="grid gap-2">
+      {entries.length > 1 ? (
+        <Select value={activeContentType} onValueChange={setSelectedContentType}>
+          <SelectTrigger
+            size="sm"
+            className="bg-muted/20 h-7 max-w-full justify-between rounded-md font-mono text-xs"
+          >
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent align="start" className="max-w-[min(28rem,calc(100vw-2rem))]">
+            {entries.map(([contentType]) => (
+              <SelectItem key={contentType} value={contentType} className="font-mono text-xs">
+                {contentType}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      ) : null}
+      {activeMediaType ? (
+        <MediaTypePanel
+          key={activeContentType}
+          contentType={activeContentType}
+          mediaType={activeMediaType}
+        />
+      ) : null}
+    </div>
+  );
+}
+
+function MediaTypePanel({
+  contentType,
+  mediaType,
+}: {
+  contentType: string;
+  mediaType: OpenApiMediaType;
+}) {
+  const panels = getMediaTypePanels(mediaType);
+
+  if (panels.length === 0) {
+    return (
+      <div className="bg-muted/20 text-muted-foreground rounded-md px-3 py-2 text-xs">
+        No schema or examples for {contentType}.
+      </div>
+    );
+  }
+
+  if (panels.length === 1) {
+    const [panel] = panels;
+
+    if (!panel) {
+      return null;
+    }
+
+    return (
+      <div className="bg-muted/20 grid gap-2 rounded-md px-3 py-2">
+        <SchemaPreview label={`${panel.label} · ${contentType}`} value={panel.value} />
+      </div>
+    );
+  }
+
+  return (
+    <div className="bg-muted/20 grid gap-2 rounded-md px-3 py-2">
+      <Tabs defaultValue={panels[0]?.id} className="gap-2">
+        <TabsList variant="line" className="max-w-full justify-start overflow-x-auto">
+          {panels.map((panel) => (
+            <TabsTrigger key={panel.id} value={panel.id} className="text-xs">
+              {panel.label}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+        {panels.map((panel) => (
+          <TabsContent key={panel.id} value={panel.id}>
+            <SchemaPreview label={panel.label} value={panel.value} />
+          </TabsContent>
+        ))}
+      </Tabs>
+    </div>
+  );
+}
+
+function SchemaPreview({ label = "Schema", value }: { label?: string; value: unknown }) {
+  return (
+    <div className="grid gap-1">
+      <div className="text-muted-foreground text-xs">{label}</div>
+      <pre className="border-border bg-editor text-editor-foreground max-h-56 overflow-auto rounded-md border p-3 text-xs">
+        {formatPreviewValue(value)}
+      </pre>
+    </div>
+  );
+}
+
+function StatusCodeBadge({ statusCode }: { statusCode: string }) {
+  const statusClass =
+    statusCode === "default"
+      ? "status-badge--info"
+      : statusCode.startsWith("2")
+        ? "status-badge--success"
+        : statusCode.startsWith("4") || statusCode.startsWith("5")
+          ? "status-badge--error"
+          : "status-badge--warning";
+
+  return <span className={`status-badge ${statusClass}`}>{statusCode}</span>;
+}
+
+function EmptySection({ title, message }: { title: string; message: string }) {
+  return (
+    <section className="grid gap-2">
+      <h3 className="text-sm">{title}</h3>
+      <div className="border-border bg-muted/20 text-muted-foreground rounded-md border px-3 py-2 text-xs">
+        {message}
+      </div>
+    </section>
+  );
+}
+
+function formatPreviewValue(value: unknown): string {
+  if (typeof value === "string") {
+    return value;
+  }
+
+  try {
+    return JSON.stringify(value, null, 2);
+  } catch {
+    return String(value);
+  }
+}
+
+function getDefaultContentType(content: Record<string, OpenApiMediaType>): string {
+  if ("application/json" in content) {
+    return "application/json";
+  }
+
+  return Object.keys(content)[0] ?? "";
+}
+
+function getMediaTypePanels(mediaType: OpenApiMediaType) {
+  const panels: Array<{ id: string; label: string; value: unknown }> = [];
+
+  if (mediaType.schema !== undefined) {
+    panels.push({
+      id: "schema",
+      label: "Schema",
+      value: mediaType.schema,
+    });
+  }
+
+  if (mediaType.example !== undefined) {
+    panels.push({
+      id: "example",
+      label: "Example",
+      value: mediaType.example,
+    });
+  }
+
+  if (mediaType.examples) {
+    for (const [name, example] of Object.entries(mediaType.examples)) {
+      panels.push({
+        id: `example:${name}`,
+        label: name,
+        value: example,
+      });
+    }
+  }
+
+  return panels;
 }
