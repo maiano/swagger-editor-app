@@ -44,14 +44,11 @@ export function SwaggerViewer() {
       <CardContent className="grid gap-4">
         <div className="grid gap-2">
           {document.endpoints.length > 0 ? (
-            document.endpoints.map((endpoint) => (
-              <EndpointListItem
-                key={endpoint.id}
-                endpoint={endpoint}
-                selected={selectedEndpointId === endpoint.id}
-                onSelect={() => setSelectedEndpointId(endpoint.id)}
-              />
-            ))
+            <EndpointGroups
+              endpoints={document.endpoints}
+              selectedEndpointId={selectedEndpointId}
+              onSelectEndpoint={setSelectedEndpointId}
+            />
           ) : (
             <div className="border-border bg-muted/30 text-muted-foreground rounded-md border px-3 py-2 text-sm">
               No endpoints found in this schema.
@@ -66,6 +63,38 @@ export function SwaggerViewer() {
         ) : null}
       </CardContent>
     </Card>
+  );
+}
+
+function EndpointGroups({
+  endpoints,
+  selectedEndpointId,
+  onSelectEndpoint,
+}: {
+  endpoints: OpenApiEndpoint[];
+  selectedEndpointId: string | null;
+  onSelectEndpoint: (endpointId: string) => void;
+}) {
+  return (
+    <div className="grid gap-3">
+      {groupEndpointsByPath(endpoints).map(([path, pathEndpoints]) => (
+        <section key={path} className="grid gap-2">
+          <div className="text-muted-foreground border-border border-b pb-1 font-mono text-xs">
+            {path}
+          </div>
+          <div className="grid gap-1.5">
+            {pathEndpoints.map((endpoint) => (
+              <EndpointListItem
+                key={endpoint.id}
+                endpoint={endpoint}
+                selected={selectedEndpointId === endpoint.id}
+                onSelect={() => onSelectEndpoint(endpoint.id)}
+              />
+            ))}
+          </div>
+        </section>
+      ))}
+    </div>
   );
 }
 
@@ -404,4 +433,21 @@ function getMediaTypePanels(mediaType: OpenApiMediaType) {
   }
 
   return panels;
+}
+
+function groupEndpointsByPath(endpoints: OpenApiEndpoint[]) {
+  const groups = new Map<string, OpenApiEndpoint[]>();
+
+  for (const endpoint of endpoints) {
+    const group = groups.get(endpoint.path);
+
+    if (group) {
+      group.push(endpoint);
+      continue;
+    }
+
+    groups.set(endpoint.path, [endpoint]);
+  }
+
+  return Array.from(groups.entries());
 }
