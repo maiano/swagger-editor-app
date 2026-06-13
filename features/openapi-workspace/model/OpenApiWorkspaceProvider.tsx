@@ -17,9 +17,31 @@ paths:
   /pets:
     get:
       summary: List pets
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 10
       responses:
         "200":
           description: OK
+    post:
+      summary: Create pet
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+              properties:
+                name:
+                  type: string
+      responses:
+        "201":
+          description: Created
 `;
 
 const OpenApiWorkspaceContext = createContext<OpenApiWorkspaceValue | null>(null);

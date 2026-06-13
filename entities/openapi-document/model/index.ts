@@ -1,3 +1,4 @@
+export * from "./build-curl-command";
 export * from "./detect-openapi-version";
 export * from "./errors";
 export * from "./normalize-common";
@@ -6,4 +7,5 @@ export * from "./normalize-openapi3";
 export * from "./normalize-swagger2";
 export * from "./openapi-parser";
 export * from "./parse-openapi-schema";
+export * from "./request-model";
 export * from "./types";
