@@ -1,6 +1,7 @@
 "use client";
 
 import { CopyIcon, PlayIcon } from "lucide-react";
+import { useState } from "react";
 
 import {
   buildCurlCommand,
@@ -18,6 +19,13 @@ import { Textarea } from "@/shared/ui/textarea";
 export function RequestConsole() {
   const { document, selectedEndpoint, requestDraftsByEndpointId, setRequestDraft } =
     useOpenApiWorkspace();
+  const [copyState, setCopyState] = useState<{
+    endpointId: string | null;
+    status: "idle" | "copied" | "failed";
+  }>({
+    endpointId: null,
+    status: "idle",
+  });
 
   if (!document || !selectedEndpoint) {
     return (
@@ -35,9 +43,25 @@ export function RequestConsole() {
     requestDraftsByEndpointId[selectedEndpointId] ?? createInitialRequestDraft(selectedEndpoint);
   const request = createRequestModel(selectedEndpoint, draft);
   const curl = buildCurlCommand(request);
+  const copyStatus = copyState.endpointId === selectedEndpointId ? copyState.status : "idle";
 
   function updateDraft(value: RequestDraft) {
+    setCopyState({ endpointId: selectedEndpointId, status: "idle" });
     setRequestDraft(selectedEndpointId, value);
+  }
+
+  async function copyCurl() {
+    if (!navigator.clipboard) {
+      setCopyState({ endpointId: selectedEndpointId, status: "failed" });
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(curl);
+      setCopyState({ endpointId: selectedEndpointId, status: "copied" });
+    } catch {
+      setCopyState({ endpointId: selectedEndpointId, status: "failed" });
+    }
   }
 
   return (
@@ -59,11 +83,14 @@ export function RequestConsole() {
         <section className="grid gap-2">
           <div className="flex items-center justify-between gap-2">
             <h3 className="text-sm">cURL</h3>
-            <Button type="button" variant="outline" size="sm" disabled>
+            <Button type="button" variant="outline" size="sm" onClick={copyCurl}>
               <CopyIcon data-icon="inline-start" />
-              Copy
+              {copyStatus === "copied" ? "Copied" : "Copy"}
             </Button>
           </div>
+          {copyStatus === "failed" ? (
+            <p className="text-status-error text-xs">Clipboard is unavailable.</p>
+          ) : null}
           <pre className="border-border bg-editor text-editor-foreground max-h-56 overflow-auto rounded-md border p-3 text-xs">
             {curl}
           </pre>
