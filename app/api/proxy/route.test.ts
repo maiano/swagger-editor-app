@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { POST } from "./route";
 
@@ -27,6 +27,10 @@ function createValidProxyInput(overrides: Record<string, unknown> = {}) {
 }
 
 describe("/api/proxy", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   it("returns 400 for invalid JSON", async () => {
     const response = await POST(
       new Request("http://localhost/api/proxy", {
@@ -73,15 +77,18 @@ describe("/api/proxy", () => {
     expect(response.status).toBe(400);
   });
 
-  it("returns 501 for valid payload until execution is implemented", async () => {
+  it("returns proxy result for valid payloads", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response("ok", { status: 200 }));
+
     const response = await POST(createProxyRequest(createValidProxyInput()));
 
     await expect(response.json()).resolves.toMatchObject({
-      ok: false,
-      error: {
-        type: "not_implemented",
+      ok: true,
+      response: {
+        status: 200,
+        body: "ok",
       },
     });
-    expect(response.status).toBe(501);
+    expect(response.status).toBe(200);
   });
 });

@@ -1,4 +1,4 @@
-export type ProxyErrorCode = "invalid_payload" | "blocked_url" | "not_implemented";
+export type ProxyErrorCode = "invalid_payload" | "blocked_url" | "timeout" | "network_error";
 
 export interface ProxyResult {
   ok: boolean;

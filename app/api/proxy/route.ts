@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
 import { ZodError } from "zod";
 
+import { executeProxyRequest } from "@/server/proxy/execute-proxy-request";
 import { ProxyValidationError } from "@/server/proxy/proxy-errors";
 import type { ProxyResult } from "@/server/proxy/proxy-result";
 import { proxyInputSchema } from "@/server/proxy/proxy-input";
-import { validateTargetUrl } from "@/server/proxy/validate-target-url";
 
 export const runtime = "nodejs";
 
@@ -28,18 +28,9 @@ export async function POST(request: Request) {
 
   try {
     const input = proxyInputSchema.parse(rawInput);
-    await validateTargetUrl(input.resolvedUrl);
+    const result = await executeProxyRequest(input);
 
-    return createProxyJsonResponse(
-      {
-        ok: false,
-        error: {
-          type: "not_implemented",
-          message: "Proxy execution is not implemented yet",
-        },
-      },
-      501
-    );
+    return createProxyJsonResponse(result, 200);
   } catch (error) {
     if (error instanceof ZodError) {
       return createProxyJsonResponse(
