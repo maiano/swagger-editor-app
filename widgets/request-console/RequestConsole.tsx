@@ -16,6 +16,51 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/sha
 import { Input } from "@/shared/ui/input";
 import { Textarea } from "@/shared/ui/textarea";
 
+type ProxyResult = {
+  ok: boolean;
+  response?: {
+    status: number;
+    statusText?: string;
+    headers: Record<string, string>;
+    body: string;
+    durationMs: number;
+    truncated: boolean;
+  };
+  error?: {
+    type: string;
+    message: string;
+  };
+  analytics?: {
+    requestSizeBytes: number;
+    responseSizeBytes: number;
+  };
+};
+
+type ExecuteState =
+  | {
+      endpointId: string | null;
+      status: "idle";
+    }
+  | {
+      endpointId: string;
+      status: "loading";
+    }
+  | {
+      endpointId: string;
+      status: "success";
+      result: ProxyResult;
+    }
+  | {
+      endpointId: string;
+      status: "failed";
+      message: string;
+    };
+
+const IDLE_EXECUTE_STATE: ExecuteState = {
+  endpointId: null,
+  status: "idle",
+};
+
 export function RequestConsole() {
   const { document, selectedEndpoint, requestDraftsByEndpointId, setRequestDraft } =
     useOpenApiWorkspace();
@@ -23,6 +68,10 @@ export function RequestConsole() {
     endpointId: string | null;
     status: "idle" | "copied" | "failed";
   }>({
+    endpointId: null,
+    status: "idle",
+  });
+  const [executeState, setExecuteState] = useState<ExecuteState>({
     endpointId: null,
     status: "idle",
   });
@@ -44,9 +93,12 @@ export function RequestConsole() {
   const request = createRequestModel(selectedEndpoint, draft);
   const curl = buildCurlCommand(request);
   const copyStatus = copyState.endpointId === selectedEndpointId ? copyState.status : "idle";
+  const visibleExecuteState =
+    executeState.endpointId === selectedEndpointId ? executeState : IDLE_EXECUTE_STATE;
 
   function updateDraft(value: RequestDraft) {
     setCopyState({ endpointId: selectedEndpointId, status: "idle" });
+    setExecuteState({ endpointId: null, status: "idle" });
     setRequestDraft(selectedEndpointId, value);
   }
 
@@ -61,6 +113,33 @@ export function RequestConsole() {
       setCopyState({ endpointId: selectedEndpointId, status: "copied" });
     } catch {
       setCopyState({ endpointId: selectedEndpointId, status: "failed" });
+    }
+  }
+
+  async function executeRequest() {
+    setExecuteState({ endpointId: selectedEndpointId, status: "loading" });
+
+    try {
+      const response = await fetch("/api/proxy", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+        },
+        body: JSON.stringify(request),
+      });
+      const result = (await response.json()) as ProxyResult;
+
+      setExecuteState({
+        endpointId: selectedEndpointId,
+        status: "success",
+        result,
+      });
+    } catch {
+      setExecuteState({
+        endpointId: selectedEndpointId,
+        status: "failed",
+        message: "Request execution failed before reaching proxy.",
+      });
     }
   }
 
@@ -95,13 +174,90 @@ export function RequestConsole() {
             {curl}
           </pre>
         </section>
-        <Button type="button" disabled>
+        <Button
+          type="button"
+          onClick={executeRequest}
+          disabled={visibleExecuteState.status === "loading"}
+        >
           <PlayIcon data-icon="inline-start" />
-          Execute after proxy
+          {visibleExecuteState.status === "loading" ? "Executing" : "Execute"}
         </Button>
+        <ResponsePanel state={visibleExecuteState} />
       </CardContent>
     </Card>
   );
+}
+
+function ResponsePanel({ state }: { state: ExecuteState }) {
+  if (state.status === "idle") {
+    return (
+      <section className="border-border bg-muted/20 text-muted-foreground rounded-md border px-3 py-2 text-xs">
+        Execute a request to see the proxy response.
+      </section>
+    );
+  }
+
+  if (state.status === "loading") {
+    return (
+      <section className="border-border bg-muted/20 text-muted-foreground rounded-md border px-3 py-2 text-xs">
+        Executing through server proxy...
+      </section>
+    );
+  }
+
+  if (state.status === "failed") {
+    return (
+      <section className="border-status-error/30 bg-status-error/10 text-status-error rounded-md border px-3 py-2 text-xs">
+        {state.message}
+      </section>
+    );
+  }
+
+  const { result } = state;
+
+  if (!result.ok || !result.response) {
+    return (
+      <section className="border-status-error/30 bg-status-error/10 text-status-error grid gap-1 rounded-md border px-3 py-2 text-xs">
+        <div className="font-medium">{result.error?.type ?? "proxy_error"}</div>
+        <div>{result.error?.message ?? "Proxy request failed."}</div>
+      </section>
+    );
+  }
+
+  const statusTone = result.response.status >= 400 ? "text-status-error" : "text-status-success";
+  const responseBody = formatResponseBody(result.response.body);
+
+  return (
+    <section className="border-border bg-muted/20 grid gap-3 rounded-md border p-3">
+      <div className="flex flex-wrap items-center gap-2 text-xs">
+        <Badge variant="outline" className={statusTone}>
+          {result.response.status} {result.response.statusText}
+        </Badge>
+        <span className="text-muted-foreground">{result.response.durationMs} ms</span>
+        {result.analytics ? (
+          <span className="text-muted-foreground">
+            {result.analytics.responseSizeBytes.toLocaleString()} bytes
+          </span>
+        ) : null}
+        {result.response.truncated ? <Badge variant="secondary">truncated</Badge> : null}
+      </div>
+      <pre className="border-border bg-editor text-editor-foreground max-h-56 overflow-auto rounded-md border p-3 text-xs whitespace-pre-wrap">
+        {responseBody || "(empty response)"}
+      </pre>
+    </section>
+  );
+}
+
+function formatResponseBody(body: string): string {
+  if (!body.trim()) {
+    return "";
+  }
+
+  try {
+    return JSON.stringify(JSON.parse(body), null, 2);
+  } catch {
+    return body;
+  }
 }
 
 function RequestDraftForm({
