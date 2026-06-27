@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/ui/card";
 
 export default function AboutPage() {
@@ -6,7 +7,7 @@ export default function AboutPage() {
       <h1 className="mb-8 text-4xl font-bold">About</h1>
 
       <section className="mb-10">
-        <h2 className="mb-4 text-2xl font-semibold">RS School</h2>
+        <h2>RS School</h2>
         <p className="text-muted-foreground">
           This project was created as part of the RS School course — a free, community-based
           JavaScript and Frontend education program.
@@ -14,7 +15,7 @@ export default function AboutPage() {
       </section>
 
       <section className="mb-10">
-        <h2 className="mb-4 text-2xl font-semibold">Project</h2>
+        <h2>Project</h2>
         <p className="text-muted-foreground">
           Swagger/OpenAPI editor and REST client for API exploration and testing. Built with
           Next.js, TypeScript, Tailwind CSS, and Supabase.
@@ -22,7 +23,7 @@ export default function AboutPage() {
       </section>
 
       <section>
-        <h2 className="mb-4 text-2xl font-semibold">Our Team</h2>
+        <h2>Our Team</h2>
         <div className="grid gap-4 md:grid-cols-3">
           <Card>
             <CardHeader>
@@ -30,13 +31,13 @@ export default function AboutPage() {
               <CardDescription>Team Lead</CardDescription>
             </CardHeader>
             <CardContent>
-              <a
+              <Link
                 href="https://github.com/maiano"
                 target="_blank"
                 className="text-blue-500 hover:underline"
               >
                 github.com/maiano
-              </a>
+              </Link>
             </CardContent>
           </Card>
 
@@ -46,13 +47,13 @@ export default function AboutPage() {
               <CardDescription>Developer</CardDescription>
             </CardHeader>
             <CardContent>
-              <a
+              <Link
                 href="https://github.com/KatherinaSl"
                 target="_blank"
                 className="text-blue-500 hover:underline"
               >
                 github.com/KatherinaSl
-              </a>
+              </Link>
             </CardContent>
           </Card>
 
@@ -62,13 +63,13 @@ export default function AboutPage() {
               <CardDescription>Developer</CardDescription>
             </CardHeader>
             <CardContent>
-              <a
+              <Link
                 href="https://github.com/Dilafruz-17"
                 target="_blank"
                 className="text-blue-500 hover:underline"
               >
                 github.com/Dilafruz-17
-              </a>
+              </Link>
             </CardContent>
           </Card>
         </div>
