@@ -19,7 +19,6 @@ export default function SignInComponent() {
     resolver: zodResolver(LoginSchema),
   });
   const onSubmit = async (data: LoginData) => {
-    console.log(data);
     const supabase = createClient();
 
     try {
