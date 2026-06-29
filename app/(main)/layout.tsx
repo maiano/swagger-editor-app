@@ -1,4 +1,4 @@
-import HeaderContent from "@/widgets/header-content/HeaderContent";
+import Header from "@/widgets/header/Header";
 
 export default function MainLayout({
   children,
@@ -7,12 +7,7 @@ export default function MainLayout({
 }>) {
   return (
     <>
-      <header
-        className="bg-background/95 sticky top-0 z-50 w-full border-b backdrop-blur"
-        data-scroll-behavior="smooth"
-      >
-        <HeaderContent />
-      </header>
+      <Header />
       {children}
     </>
   );

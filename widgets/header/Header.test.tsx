@@ -1,7 +1,7 @@
 import "@testing-library/jest-dom/vitest";
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it, vi, beforeEach } from "vitest";
-import HeaderContent from "./HeaderContent";
+import HeaderContent from "./Header";
 import { getUser } from "@/shared/lib/supabase/utils";
 
 const pushMock = vi.fn();
