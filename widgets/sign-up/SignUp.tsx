@@ -6,10 +6,9 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { RegistrationData, RegistrationSchema } from "@/shared/schema/schema";
 import { createClient } from "@/shared/lib/supabase/client";
-import { FieldLabel } from "@/shared/ui/field";
+import { FieldError, FieldLabel } from "@/shared/ui/field";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/shared/ui/input-group";
 import { Button } from "@/shared/ui/button";
-import ValidationError from "../validation-error/ValidationError";
 import { MailIcon } from "lucide-react";
 
 export default function SignUpComponent() {
@@ -40,8 +39,8 @@ export default function SignUpComponent() {
       });
       if (error) throw error;
       router.push("/");
+      router.refresh();
     } catch (error: unknown) {
-      console.error(error);
       setError(error instanceof Error ? error.message : "An error occurred");
     }
   };
@@ -53,43 +52,57 @@ export default function SignUpComponent() {
           <h3>Sign Up</h3>
           <FieldLabel htmlFor="login">Login</FieldLabel>
           <InputGroup>
-            <InputGroupInput {...register("login")} type="login" placeholder="Enter your login" />
+            <InputGroupInput
+              {...register("login")}
+              id="login"
+              type="text"
+              placeholder="Enter your login"
+            />
           </InputGroup>
-          {errors.login?.message && <ValidationError message={errors.login.message} />}
+          {errors.login?.message && <FieldError>{errors.login.message}</FieldError>}
 
           <FieldLabel htmlFor="email">Email</FieldLabel>
           <InputGroup>
-            <InputGroupInput {...register("email")} type="email" placeholder="Enter your email" />
+            <InputGroupInput
+              {...register("email")}
+              id="email"
+              type="email"
+              placeholder="Enter your email"
+            />
             <InputGroupAddon>
               <MailIcon />
             </InputGroupAddon>
           </InputGroup>
-          {errors.email?.message && <ValidationError message={errors.email.message} />}
+          {errors.email?.message && <FieldError>{errors.email.message}</FieldError>}
 
           <FieldLabel htmlFor="password">Password</FieldLabel>
           <InputGroup>
             <InputGroupInput
               {...register("password")}
+              id="password"
               type="password"
               placeholder="Enter password"
             />
           </InputGroup>
-          {errors.password?.message && <ValidationError message={errors.password.message} />}
+          {errors.password?.message && <FieldError>{errors.password.message}</FieldError>}
+
           <FieldLabel htmlFor="confirmPassword">Confirm password</FieldLabel>
           <InputGroup>
             <InputGroupInput
               {...register("confirmPassword")}
+              id="confirmPassword"
               type="password"
               placeholder="Please, confirm password"
             />
           </InputGroup>
           {errors.confirmPassword?.message && (
-            <ValidationError message={errors.confirmPassword.message} />
+            <FieldError>{errors.confirmPassword.message}</FieldError>
           )}
-          {error && <p className="text-sm text-red-500">{error}</p>}
+
           <Button disabled={!isValid} type="submit">
-            Sing up
+            Sign up
           </Button>
+          {error && <FieldError>{error}</FieldError>}
         </form>
       </div>
     </div>

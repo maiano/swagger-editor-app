@@ -7,7 +7,6 @@ export const RegistrationSchema = z
     password: z
       .string()
       .min(8, "Password must be at least 8 characters")
-      .normalize()
       .regex(
         /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[\W])/,
         "Password must contain at least one letter, one digit, and one special character"
