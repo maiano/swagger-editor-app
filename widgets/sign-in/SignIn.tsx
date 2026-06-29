@@ -3,7 +3,7 @@
 import { createClient } from "@/shared/lib/supabase/client";
 import { LoginData, LoginSchema } from "@/shared/schema/schema";
 import { Button } from "@/shared/ui/button";
-import { FieldLabel } from "@/shared/ui/field";
+import { FieldError, FieldLabel } from "@/shared/ui/field";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/shared/ui/input-group";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { MailIcon } from "lucide-react";
@@ -15,7 +15,11 @@ export default function SignInComponent() {
   const router = useRouter();
 
   const [error, setError] = useState<string | null>(null);
-  const { register, handleSubmit } = useForm<LoginData>({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginData>({
     resolver: zodResolver(LoginSchema),
   });
   const onSubmit = async (data: LoginData) => {
@@ -28,8 +32,8 @@ export default function SignInComponent() {
       });
       if (error) throw error;
       router.push("/");
+      router.refresh();
     } catch (error: unknown) {
-      console.error(error);
       setError(error instanceof Error ? error.message : "An error occurred");
     }
   };
@@ -41,22 +45,31 @@ export default function SignInComponent() {
           <h3>Sign In</h3>
           <FieldLabel htmlFor="email">Email</FieldLabel>
           <InputGroup>
-            <InputGroupInput {...register("email")} type="email" placeholder="Enter your email" />
+            <InputGroupInput
+              {...register("email")}
+              id="email"
+              type="email"
+              placeholder="Enter your email"
+            />
             <InputGroupAddon>
               <MailIcon />
             </InputGroupAddon>
           </InputGroup>
+          {errors.email?.message && <FieldError>{errors.email.message}</FieldError>}
 
           <FieldLabel htmlFor="password">Password</FieldLabel>
           <InputGroup>
             <InputGroupInput
               {...register("password")}
+              id="password"
               type="password"
               placeholder="Enter password"
             />
           </InputGroup>
-          {error && <p className="text-sm text-red-500">{error}</p>}
+          {errors.password?.message && <FieldError>{errors.password.message}</FieldError>}
+
           <Button type="submit">Sign In</Button>
+          {error && <FieldError>{error}</FieldError>}
         </form>
       </div>
     </div>
