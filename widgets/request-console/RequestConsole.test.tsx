@@ -61,6 +61,7 @@ function createWorkspaceValue(draft: RequestDraft): OpenApiWorkspaceValue {
     requestDraftsByEndpointId: {
       [selectedEndpoint.id]: draft,
     },
+    isAuthenticated: true,
     setSchemaText: vi.fn(),
     setSchemaFormat: vi.fn(),
     setStatus: vi.fn(),

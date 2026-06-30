@@ -15,7 +15,7 @@ export default async function MainLayout({
   return (
     <div className="app-shell flex flex-col">
       <Header />
-      <MainClientProviders initialSchemaText={savedSchema?.content}>
+      <MainClientProviders initialSchemaText={savedSchema?.content} isAuthenticated={Boolean(user)}>
         <main className="app-container flex-1 px-4 py-4 lg:px-8">{children}</main>
       </MainClientProviders>
     </div>

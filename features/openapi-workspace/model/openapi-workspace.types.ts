@@ -18,6 +18,7 @@ export interface OpenApiWorkspaceState {
   document: OpenApiDocument | null;
   selectedEndpointId: string | null;
   requestDraftsByEndpointId: Record<string, RequestDraft>;
+  isAuthenticated: boolean;
 }
 
 export interface OpenApiWorkspaceValue extends OpenApiWorkspaceState {

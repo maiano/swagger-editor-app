@@ -53,11 +53,13 @@ const OpenApiWorkspaceContext = createContext<OpenApiWorkspaceValue | null>(null
 interface OpenApiWorkspaceProviderProps {
   children: ReactNode;
   initialSchemaText?: string;
+  isAuthenticated?: boolean;
 }
 
 export function OpenApiWorkspaceProvider({
   children,
   initialSchemaText = INITIAL_SCHEMA,
+  isAuthenticated = false,
 }: OpenApiWorkspaceProviderProps) {
   const [schemaText, setSchemaTextState] = useState(initialSchemaText);
   const [schemaFormat, setSchemaFormat] = useState<SchemaFormat>(
@@ -96,6 +98,7 @@ export function OpenApiWorkspaceProvider({
       selectedEndpointId,
       requestDraftsByEndpointId,
       selectedEndpoint,
+      isAuthenticated,
       setSchemaText,
       setSchemaFormat,
       setStatus,
@@ -113,6 +116,7 @@ export function OpenApiWorkspaceProvider({
       selectedEndpointId,
       requestDraftsByEndpointId,
       selectedEndpoint,
+      isAuthenticated,
     ]
   );
 
