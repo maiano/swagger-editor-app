@@ -7,11 +7,11 @@ export default function MainLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <MainClientProviders>
-      <main className="app-container flex-1 px-4 py-4 lg:px-8">
-        <Header />
-        {children}
-      </main>
-    </MainClientProviders>
+    <div className="app-shell flex flex-col">
+      <Header />
+      <MainClientProviders>
+        <main className="app-container flex-1 px-4 py-4 lg:px-8">{children}</main>
+      </MainClientProviders>
+    </div>
   );
 }
