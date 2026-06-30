@@ -1,3 +1,4 @@
+import Header from "@/widgets/header/Header";
 import { MainClientProviders } from "./main-client-providers";
 
 export default function MainLayout({
@@ -7,7 +8,10 @@ export default function MainLayout({
 }>) {
   return (
     <MainClientProviders>
-      <main className="app-container flex-1 px-4 py-4 lg:px-8">{children}</main>
+      <main className="app-container flex-1 px-4 py-4 lg:px-8">
+        <Header />
+        {children}
+      </main>
     </MainClientProviders>
   );
 }
