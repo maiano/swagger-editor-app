@@ -5,7 +5,6 @@ import HeaderContent from "./Header";
 import { getUser } from "@/shared/lib/supabase/utils";
 
 const pushMock = vi.fn();
-// const refreshMock = vi.fn();
 
 vi.mock("next/link", () => ({
   default: ({ children, href }: { children: React.ReactNode; href: string }) => (
@@ -20,7 +19,6 @@ vi.mock("@/shared/lib/supabase/utils", () => ({
 vi.mock("next/navigation", () => ({
   useRouter: () => ({
     push: pushMock,
-    // refresh: refreshMock,
   }),
 }));
 
