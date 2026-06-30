@@ -1,6 +1,7 @@
 "use client";
 
-import { AlertTriangleIcon, CheckCircle2Icon, Loader2Icon } from "lucide-react";
+import { AlertTriangleIcon, CheckCircle2Icon, CloudUploadIcon, Loader2Icon } from "lucide-react";
+import { useState } from "react";
 
 import { parseOpenApiSchema } from "@/entities/openapi-document/model";
 import { useOpenApiWorkspace } from "@/features/openapi-workspace/model";
@@ -13,6 +14,8 @@ import { CodeEditor } from "./CodeEditor";
 export function SwaggerEditor() {
   const workspace = useOpenApiWorkspace();
   const isValidating = workspace.status === "validating";
+  const [saveState, setSaveState] = useState<"idle" | "saving" | "saved" | "failed">("idle");
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   async function validateCurrentSchema() {
     const trimmedText = workspace.schemaText.trim();
@@ -42,6 +45,37 @@ export function SwaggerEditor() {
     workspace.setError(null);
     workspace.setDocument(result.document);
     workspace.setSelectedEndpointId(result.document.endpoints[0]?.id ?? null);
+    setSaveState("idle");
+    setSaveError(null);
+  }
+
+  async function saveCurrentSchema() {
+    setSaveState("saving");
+    setSaveError(null);
+
+    try {
+      const response = await fetch("/api/schemas", {
+        method: "PUT",
+        headers: {
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({
+          content: workspace.schemaText,
+        }),
+      });
+      const result = (await response.json()) as { ok: boolean; error?: string };
+
+      if (!response.ok || !result.ok) {
+        setSaveState("failed");
+        setSaveError(result.error ?? "Failed to save schema.");
+        return;
+      }
+
+      setSaveState("saved");
+    } catch {
+      setSaveState("failed");
+      setSaveError("Failed to reach schema save endpoint.");
+    }
   }
 
   return (
@@ -62,6 +96,21 @@ export function SwaggerEditor() {
             ) : null}
             Validate
           </Button>
+          {workspace.isAuthenticated ? (
+            <Button
+              type="button"
+              variant="outline"
+              onClick={saveCurrentSchema}
+              disabled={saveState === "saving" || workspace.status !== "valid"}
+            >
+              {saveState === "saving" ? (
+                <Loader2Icon className="animate-spin" data-icon="inline-start" />
+              ) : (
+                <CloudUploadIcon data-icon="inline-start" />
+              )}
+              Save
+            </Button>
+          ) : null}
         </CardAction>
       </CardHeader>
       <CardContent className="grid gap-3 pt-4">
@@ -77,6 +126,7 @@ export function SwaggerEditor() {
           version={workspace.document?.version}
           endpointCount={workspace.document?.endpoints.length ?? 0}
         />
+        <SaveStatus state={saveState} error={saveError} />
       </CardContent>
     </Card>
   );
@@ -117,6 +167,40 @@ function ValidationStatus({ status, error, title, version, endpointCount }: Vali
   return (
     <div className="border-border bg-muted/30 text-muted-foreground rounded-md border px-3 py-2 text-sm">
       {status === "validating" ? "Validating..." : "Ready"}
+    </div>
+  );
+}
+
+function SaveStatus({
+  state,
+  error,
+}: {
+  state: "idle" | "saving" | "saved" | "failed";
+  error: string | null;
+}) {
+  if (state === "idle") {
+    return null;
+  }
+
+  if (state === "saved") {
+    return (
+      <div className="border-status-success/30 bg-status-success/10 text-status-success rounded-md border px-3 py-2 text-sm">
+        Schema saved.
+      </div>
+    );
+  }
+
+  if (state === "failed") {
+    return (
+      <div className="border-status-error/30 bg-status-error/10 text-status-error rounded-md border px-3 py-2 text-sm">
+        {error ?? "Failed to save schema."}
+      </div>
+    );
+  }
+
+  return (
+    <div className="border-border bg-muted/30 text-muted-foreground rounded-md border px-3 py-2 text-sm">
+      Saving schema...
     </div>
   );
 }
