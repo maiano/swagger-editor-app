@@ -273,6 +273,49 @@ small {
   line-height: 1.45;
 }
 
+.app-header {
+  background: oklch(from var(--background) l c h / 0.58);
+  transition:
+    background-color 180ms ease,
+    box-shadow 180ms ease,
+    border-color 180ms ease;
+}
+
+.app-header-inner {
+  min-height: 4rem;
+  transition: min-height 180ms ease;
+}
+
+@supports (animation-timeline: scroll()) {
+  .app-header {
+    animation: app-header-stuck linear both;
+    animation-timeline: scroll(root block);
+    animation-range: 0 96px;
+  }
+
+  .app-header-inner {
+    animation: app-header-inner-stuck linear both;
+    animation-timeline: scroll(root block);
+    animation-range: 0 96px;
+  }
+}
+
+@keyframes app-header-stuck {
+  to {
+    background: oklch(from var(--background) l c h / 0.96);
+    border-color: var(--border);
+    box-shadow:
+      0 1px 0 var(--border),
+      0 8px 24px oklch(0 0 0 / 0.18);
+  }
+}
+
+@keyframes app-header-inner-stuck {
+  to {
+    min-height: 3rem;
+  }
+}
+
 code,
 pre,
 kbd,

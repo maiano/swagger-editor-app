@@ -1,8 +1,8 @@
 "use client";
 
 import { createClient } from "@/shared/lib/supabase/client";
-import { Button } from "@/shared/ui/button";
 import { useRouter } from "next/navigation";
+import { HeaderActionButton } from "@/widgets/header/HeaderLink";
 
 export function LogoutButton() {
   const router = useRouter();
@@ -15,5 +15,9 @@ export function LogoutButton() {
     router.refresh();
   };
 
-  return <Button onClick={logout}>Logout</Button>;
+  return (
+    <HeaderActionButton type="button" onClick={logout}>
+      Logout
+    </HeaderActionButton>
+  );
 }
