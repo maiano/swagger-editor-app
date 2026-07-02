@@ -57,7 +57,7 @@ export default function SignInComponent() {
               <MailIcon />
             </InputGroupAddon>
           </InputGroup>
-          {errors.email?.message && <FieldError>{errors.email.message}</FieldError>}
+          {errors.email?.message && <FieldError>{t(errors.email.message)}</FieldError>}
 
           <FieldLabel htmlFor="password">{t("password")}</FieldLabel>
           <InputGroup>
@@ -68,7 +68,7 @@ export default function SignInComponent() {
               placeholder={t("passwordPlaceholder")}
             />
           </InputGroup>
-          {errors.password?.message && <FieldError>{errors.password.message}</FieldError>}
+          {errors.password?.message && <FieldError>{t(errors.password.message)}</FieldError>}
 
           <Button type="submit">{t("submit")}</Button>
           {error && <FieldError>{error}</FieldError>}

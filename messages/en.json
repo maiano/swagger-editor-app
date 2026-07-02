@@ -31,9 +31,10 @@
     "passwordPlaceholder": "Enter password",
     "submit": "Sign In",
     "errorGeneric": "An error occurred",
-    "emailRequired": "Email is required",
-    "emailInvalid": "Email must be valid",
-    "passwordRequired": "Password is required"
+    "validation": {
+      "invalidEmail": "Enter a valid email address",
+      "passwordRequired": "Password is required"
+    }
   },
   "SignUp": {
     "title": "Sign Up",
@@ -47,14 +48,14 @@
     "confirmPasswordPlaceholder": "Please, confirm password",
     "submit": "Sign up",
     "errorGeneric": "An error occurred",
-    "loginRequired": "Login is required",
-    "emailRequired": "Email is required",
-    "emailInvalid": "Email must be valid",
-    "passwordRequired": "Password is required",
-    "passwordTooShort": "Password must be at least 8 characters",
-    "passwordComplexity": "Password must contain at least one letter, one digit, and one special character",
-    "confirmPasswordRequired": "Confirm password is required",
-    "passwordsMismatch": "The passwords did not match"
+    "validation": {
+      "loginRequired": "Login is required",
+      "invalidEmail": "Enter a valid email address",
+      "passwordRequired": "Password is required",
+      "passwordMin": "Password must be at least 8 characters",
+      "passwordComplexity": "Password must contain at least one letter, one digit, and one special character",
+      "passwordMismatch": "Passwords do not match"
+    }
   },
   "RequestConsole": {
     "title": "Request Console",

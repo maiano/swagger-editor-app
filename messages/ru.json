@@ -31,9 +31,10 @@
     "passwordPlaceholder": "Введите пароль",
     "submit": "Войти",
     "errorGeneric": "Произошла ошибка",
-    "emailRequired": "Требуется электронная почта",
-    "emailInvalid": "Электронная почта должна быть действительной",
-    "passwordRequired": "Требуется пароль"
+    "validation": {
+      "invalidEmail": "Введите корректный адрес электронной почты",
+      "passwordRequired": "Пароль обязателен"
+    }
   },
   "SignUp": {
     "title": "Регистрация",
@@ -47,14 +48,14 @@
     "confirmPasswordPlaceholder": "Пожалуйста, подтвердите пароль",
     "submit": "Зарегистрироваться",
     "errorGeneric": "Произошла ошибка",
-    "loginRequired": "Требуется логин",
-    "emailRequired": "Требуется электронная почта",
-    "emailInvalid": "Электронная почта должна быть действительной",
-    "passwordRequired": "Требуется пароль",
-    "passwordTooShort": "Пароль должен содержать не менее 8 символов",
-    "passwordComplexity": "Пароль должен содержать одну букву, одну цифру и один специальный символ",
-    "confirmPasswordRequired": "Требуется подтверждение пароля",
-    "passwordsMismatch": "Пароли не совпадают"
+    "validation": {
+      "loginRequired": "Логин обязателен",
+      "invalidEmail": "Введите корректный адрес электронной почты",
+      "passwordRequired": "Пароль обязателен",
+      "passwordMin": "Пароль должен содержать минимум 8 символов",
+      "passwordComplexity": "Пароль должен содержать минимум одну букву, одну цифру и один специальный символ",
+      "passwordMismatch": "Пароли не совпадают"
+    }
   },
   "RequestConsole": {
     "title": "Консоль запросов",

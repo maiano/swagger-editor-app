@@ -61,7 +61,7 @@ export default function SignUpComponent() {
               placeholder={t("loginPlaceholder")}
             />
           </InputGroup>
-          {errors.login?.message && <FieldError>{errors.login.message}</FieldError>}
+          {errors.login?.message && <FieldError>{t(errors.login.message)}</FieldError>}
 
           <FieldLabel htmlFor="email">{t("email")}</FieldLabel>
           <InputGroup>
@@ -75,7 +75,7 @@ export default function SignUpComponent() {
               <MailIcon />
             </InputGroupAddon>
           </InputGroup>
-          {errors.email?.message && <FieldError>{errors.email.message}</FieldError>}
+          {errors.email?.message && <FieldError>{t(errors.email.message)}</FieldError>}
 
           <FieldLabel htmlFor="password">{t("password")}</FieldLabel>
           <InputGroup>
@@ -86,7 +86,7 @@ export default function SignUpComponent() {
               placeholder={t("passwordPlaceholder")}
             />
           </InputGroup>
-          {errors.password?.message && <FieldError>{errors.password.message}</FieldError>}
+          {errors.password?.message && <FieldError>{t(errors.password.message)}</FieldError>}
 
           <FieldLabel htmlFor="confirmPassword">{t("confirmPassword")}</FieldLabel>
           <InputGroup>
@@ -98,7 +98,7 @@ export default function SignUpComponent() {
             />
           </InputGroup>
           {errors.confirmPassword?.message && (
-            <FieldError>{errors.confirmPassword.message}</FieldError>
+            <FieldError>{t(errors.confirmPassword.message)}</FieldError>
           )}
 
           <Button disabled={!isValid} type="submit">
