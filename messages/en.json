@@ -15,11 +15,15 @@
     "pageTitle": "About",
     "schoolTitle": "RS School",
     "projectTitle": "Project",
+    "technologiesTitle": "Technologies",
     "teamTitle": "Our Team",
     "schoolDescription": "This project was created as part of the RS School course — a free, community-based JavaScript and Frontend education program.",
     "projectDescription": "Swagger/OpenAPI editor and REST client for API exploration and testing. Built with Next.js, TypeScript, Tailwind CSS, and Supabase.",
     "teamLead": "Team Lead",
     "developer": "Developer"
+  },
+  "Footer": {
+    "about": "About"
   },
   "HistoryPage": {
     "title": "Request History",

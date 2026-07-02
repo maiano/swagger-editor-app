@@ -1,25 +1,43 @@
-import Link from "next/link";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/ui/card";
 import { getTranslations } from "next-intl/server";
+import Link from "next/link";
+
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/ui/card";
+
+const technologies = ["Next.js", "TypeScript", "Tailwind CSS", "Supabase", "Vitest", "shadcn/ui"];
 
 export default async function AboutPage() {
   const t = await getTranslations("AboutPage");
+
   return (
-    <main className="container mx-auto px-4 py-12">
-      <h1 className="mb-8 text-4xl font-bold">{t("pageTitle")}</h1>
+    <section className="grid gap-12 py-8">
+      <div className="max-w-2xl">
+        <h1 className="mb-4 text-4xl font-bold">{t("pageTitle")}</h1>
+        <p className="text-muted-foreground text-lg">{t("projectDescription")}</p>
+      </div>
 
-      <section className="mb-10">
-        <h2>{t("schoolTitle")}</h2>
-        <p className="text-muted-foreground">{t("schoolDescription")}</p>
-      </section>
+      <div className="grid gap-8 md:grid-cols-2">
+        <section className="app-panel p-8">
+          <h2 className="mb-4">{t("schoolTitle")}</h2>
+          <p className="text-muted-foreground">{t("schoolDescription")}</p>
+        </section>
 
-      <section className="mb-10">
-        <h2>{t("projectTitle")}</h2>
-        <p className="text-muted-foreground">{t("projectDescription")}</p>
-      </section>
+        <section className="app-panel p-8">
+          <h2 className="mb-4">{t("technologiesTitle")}</h2>
+          <div className="flex flex-wrap gap-2">
+            {technologies.map((tech) => (
+              <span
+                key={tech}
+                className="bg-muted text-muted-foreground rounded-md px-3 py-1 text-sm"
+              >
+                {tech}
+              </span>
+            ))}
+          </div>
+        </section>
+      </div>
 
       <section>
-        <h2>{t("teamTitle")}</h2>
+        <h2 className="mb-8">{t("teamTitle")}</h2>
         <div className="grid gap-4 md:grid-cols-3">
           <Card>
             <CardHeader>
@@ -30,7 +48,7 @@ export default async function AboutPage() {
               <Link
                 href="https://github.com/maiano"
                 target="_blank"
-                className="text-blue-500 hover:underline"
+                className="text-primary text-sm hover:underline"
               >
                 github.com/maiano
               </Link>
@@ -46,7 +64,7 @@ export default async function AboutPage() {
               <Link
                 href="https://github.com/KatherinaSl"
                 target="_blank"
-                className="text-blue-500 hover:underline"
+                className="text-primary text-sm hover:underline"
               >
                 github.com/KatherinaSl
               </Link>
@@ -62,7 +80,7 @@ export default async function AboutPage() {
               <Link
                 href="https://github.com/Dilafruz-17"
                 target="_blank"
-                className="text-blue-500 hover:underline"
+                className="text-primary text-sm hover:underline"
               >
                 github.com/Dilafruz-17
               </Link>
@@ -70,6 +88,6 @@ export default async function AboutPage() {
           </Card>
         </div>
       </section>
-    </main>
+    </section>
   );
 }
