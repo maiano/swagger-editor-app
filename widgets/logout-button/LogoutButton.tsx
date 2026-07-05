@@ -7,7 +7,7 @@ import { createClient } from "@/shared/lib/supabase/client";
 import { HeaderActionButton } from "@/widgets/header/HeaderLink";
 
 export function LogoutButton() {
-  const t = useTranslations("LogoutButton");
+  const t = useTranslations("Common");
   const router = useRouter();
 
   const logout = async () => {
@@ -20,7 +20,7 @@ export function LogoutButton() {
 
   return (
     <HeaderActionButton type="button" onClick={logout}>
-      {t("label")}
+      {t("signOut")}
     </HeaderActionButton>
   );
 }

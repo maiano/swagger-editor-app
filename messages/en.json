@@ -2,10 +2,11 @@
   "RootLayout": {
     "title": "Swagger/OpenAPI UI"
   },
-  "HomePage": {
-    "header": "Swagger/OpenAPI UI",
+  "Common": {
+    "appName": "Swagger/OpenAPI UI",
     "signIn": "Sign in",
     "signUp": "Sign up",
+    "signOut": "Logout",
     "history": "History",
     "about": "About",
     "editor": "Editor"
@@ -19,9 +20,6 @@
     "projectDescription": "Swagger/OpenAPI editor and REST client for API exploration and testing. Built with Next.js, TypeScript, Tailwind CSS, and Supabase.",
     "teamLead": "Team Lead",
     "developer": "Developer"
-  },
-  "LogoutButton": {
-    "label": "Logout"
   },
   "HistoryPage": {
     "title": "Request History",
