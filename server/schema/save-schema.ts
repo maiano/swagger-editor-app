@@ -2,10 +2,8 @@ import "server-only";
 
 import { parseOpenApiSchema } from "@/entities/openapi-document/model";
 
-import {
-  SupabaseSavedSchemaRepository,
-  type SupabaseSavedSchemaClient,
-} from "./supabase-saved-schema-repository";
+import { createSavedSchemaRepository } from "./create-saved-schema-repository";
+import { SupabaseSavedSchemaRepository } from "./supabase-saved-schema-repository";
 
 export interface SaveSchemaForUserInput {
   userId: string;
@@ -54,11 +52,4 @@ export async function saveSchemaForUser(input: SaveSchemaForUserInput): Promise<
     ok: true,
     schema,
   };
-}
-
-async function createSavedSchemaRepository() {
-  const { createClient } = await import("@/shared/lib/supabase/server");
-  const client = await createClient();
-
-  return new SupabaseSavedSchemaRepository(client as unknown as SupabaseSavedSchemaClient);
 }
