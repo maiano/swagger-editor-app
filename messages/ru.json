@@ -15,11 +15,15 @@
     "pageTitle": "О проекте",
     "schoolTitle": "RS School",
     "projectTitle": "Проект",
+    "technologiesTitle": "Технологии",
     "teamTitle": "Наша команда",
-    "schoolDescription": "Этот проект создан в рамках курса RS School — бесплатной сообщества JavaScript и frontend-образования.",
+    "schoolDescription": "Этот проект создан в рамках курса RS School — бесплатного сообщества JavaScript и frontend-образования.",
     "projectDescription": "Редактор Swagger/OpenAPI и REST-клиент для исследования и тестирования API. Создан с помощью Next.js, TypeScript, Tailwind CSS и Supabase.",
     "teamLead": "Руководитель команды",
     "developer": "Разработчик"
+  },
+  "Footer": {
+    "about": "О проекте"
   },
   "HistoryPage": {
     "title": "История запросов",
