@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
 
 import { loadRequestHistoryPage } from "@/server/analytics/load-request-history-page";
@@ -16,49 +17,52 @@ interface HistoryPageProps {
 
 export default async function HistoryPage({ searchParams }: HistoryPageProps) {
   const { userName, history } = await getHistoryPageData(searchParams);
+  const t = await getTranslations("HistoryPage");
 
   return (
     <section className="grid gap-4">
       <header className="grid gap-1">
-        <h3 className="font-semibold tracking-tight">Request History</h3>
+        <h3 className="font-semibold tracking-tight">{t("title")}</h3>
         <p className="text-muted-foreground text-sm">
-          Server-rendered request history for {userName}.
+          {t("description", {
+            userName,
+          })}
         </p>
       </header>
 
       {history.rows.length === 0 ? (
         <Card className="border-panel-border bg-panel text-panel-foreground">
           <CardHeader>
-            <CardTitle>No requests yet</CardTitle>
-            <CardDescription>
-              Execute a request from the editor to see it appear here.
-            </CardDescription>
+            <CardTitle>{t("emptyTitle")}</CardTitle>
+            <CardDescription>{t("emptyDescription")}</CardDescription>
           </CardHeader>
           <CardContent>
             <Button asChild>
-              <Link href={routes.home}>Open editor</Link>
+              <Link href={routes.home}>{t("openEditor")}</Link>
             </Button>
           </CardContent>
         </Card>
       ) : (
         <Card className="border-panel-border bg-panel text-panel-foreground">
           <CardHeader>
-            <CardTitle>Requests</CardTitle>
+            <CardTitle>{t("requestsTitle")}</CardTitle>
             <CardDescription>
-              {history.pagination.total.toLocaleString()} recorded requests.
+              {t("recordedRequests", {
+                count: history.pagination.total,
+              })}
             </CardDescription>
           </CardHeader>
           <CardContent className="grid gap-4 overflow-x-auto">
             <table className="w-full min-w-190 text-sm">
               <thead className="text-muted-foreground border-border border-b text-left text-xs">
                 <tr>
-                  <th className="py-2 pr-3 font-medium">Time</th>
-                  <th className="py-2 pr-3 font-medium">Method</th>
-                  <th className="py-2 pr-3 font-medium">Endpoint</th>
-                  <th className="py-2 pr-3 font-medium">Status</th>
-                  <th className="py-2 pr-3 font-medium">Duration</th>
-                  <th className="py-2 pr-3 font-medium">Size</th>
-                  <th className="py-2 font-medium">Error</th>
+                  <th className="py-2 pr-3 font-medium">{t("columns.time")}</th>
+                  <th className="py-2 pr-3 font-medium">{t("columns.method")}</th>
+                  <th className="py-2 pr-3 font-medium">{t("columns.endpoint")}</th>
+                  <th className="py-2 pr-3 font-medium">{t("columns.status")}</th>
+                  <th className="py-2 pr-3 font-medium">{t("columns.duration")}</th>
+                  <th className="py-2 pr-3 font-medium">{t("columns.size")}</th>
+                  <th className="py-2 font-medium">{t("columns.error")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -79,7 +83,7 @@ export default async function HistoryPage({ searchParams }: HistoryPageProps) {
                       </div>
                     </td>
                     <td className="py-3 pr-3">
-                      <StatusBadge statusCode={row.statusCode} failedLabel="Failed" />
+                      <StatusBadge statusCode={row.statusCode} failedLabel={t("failed")} />
                     </td>
                     <td className="py-3 pr-3 font-mono text-xs">{row.durationMs} ms</td>
                     <td className="py-3 pr-3 font-mono text-xs">
@@ -90,7 +94,7 @@ export default async function HistoryPage({ searchParams }: HistoryPageProps) {
                       {row.errorDetails ? (
                         <span className="text-status-error line-clamp-2">{row.errorDetails}</span>
                       ) : (
-                        <span className="text-muted-foreground">None</span>
+                        <span className="text-muted-foreground">{t("none")}</span>
                       )}
                     </td>
                   </tr>
@@ -102,19 +106,22 @@ export default async function HistoryPage({ searchParams }: HistoryPageProps) {
               <PaginationButton
                 disabled={!history.pagination.hasPreviousPage}
                 href={`${routes.history}?page=${history.pagination.page - 1}`}
-                label="Previous page"
+                label={t("previousPage")}
               >
-                Previous
+                {t("previous")}
               </PaginationButton>
               <span className="text-muted-foreground text-xs">
-                Page {history.pagination.page} of {Math.max(history.pagination.totalPages, 1)}
+                {t("pageIndicator", {
+                  page: history.pagination.page,
+                  totalPages: Math.max(history.pagination.totalPages, 1),
+                })}
               </span>
               <PaginationButton
                 disabled={!history.pagination.hasNextPage}
                 href={`${routes.history}?page=${history.pagination.page + 1}`}
-                label="Next page"
+                label={t("nextPage")}
               >
-                Next
+                {t("next")}
               </PaginationButton>
             </div>
           </CardContent>

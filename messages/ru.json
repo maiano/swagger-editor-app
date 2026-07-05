@@ -23,6 +23,31 @@
   "LogoutButton": {
     "label": "Выйти"
   },
+  "HistoryPage": {
+    "title": "История запросов",
+    "description": "Серверная история запросов для {userName}.",
+    "emptyTitle": "Запросов пока нет",
+    "emptyDescription": "Выполните запрос из редактора, и он появится здесь.",
+    "openEditor": "Открыть редактор",
+    "requestsTitle": "Запросы",
+    "recordedRequests": "Записано запросов: {count}.",
+    "columns": {
+      "time": "Время",
+      "method": "Метод",
+      "endpoint": "Endpoint",
+      "status": "Статус",
+      "duration": "Длительность",
+      "size": "Размер",
+      "error": "Ошибка"
+    },
+    "failed": "Ошибка",
+    "none": "Нет",
+    "previous": "Назад",
+    "previousPage": "Предыдущая страница",
+    "next": "Вперед",
+    "nextPage": "Следующая страница",
+    "pageIndicator": "Страница {page} из {totalPages}"
+  },
   "ValidationForms": {
     "signIn": {
       "title": "Вход",
