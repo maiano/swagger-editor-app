@@ -2,6 +2,9 @@ import { render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { LogoutButton } from "./LogoutButton";
 import userEvent from "@testing-library/user-event";
+import { NextIntlClientProvider } from "next-intl";
+
+import messages from "../../messages/en.json";
 
 const pushMock = vi.fn();
 const refreshMock = vi.fn();
@@ -26,7 +29,7 @@ describe("LogoutButton", () => {
   it("logs user out and redirects", async () => {
     signOutMock.mockResolvedValue(undefined);
 
-    render(<LogoutButton />);
+    renderLogoutButton();
 
     await userEvent.click(screen.getByRole("button", { name: /logout/i }));
 
@@ -36,7 +39,7 @@ describe("LogoutButton", () => {
   it("redirects after logout", async () => {
     signOutMock.mockResolvedValue(undefined);
 
-    render(<LogoutButton />);
+    renderLogoutButton();
 
     await userEvent.click(screen.getByRole("button", { name: /logout/i }));
 
@@ -46,3 +49,11 @@ describe("LogoutButton", () => {
     });
   });
 });
+
+function renderLogoutButton() {
+  render(
+    <NextIntlClientProvider locale="en" messages={messages}>
+      <LogoutButton />
+    </NextIntlClientProvider>
+  );
+}
