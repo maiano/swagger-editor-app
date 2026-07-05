@@ -15,14 +15,14 @@ interface HistoryPageProps {
 }
 
 export default async function HistoryPage({ searchParams }: HistoryPageProps) {
-  const { userEmail, history } = await getHistoryPageData(searchParams);
+  const { userName, history } = await getHistoryPageData(searchParams);
 
   return (
     <section className="grid gap-4">
       <header className="grid gap-1">
         <h3 className="font-semibold tracking-tight">Request History</h3>
         <p className="text-muted-foreground text-sm">
-          Server-rendered request history for {userEmail}.
+          Server-rendered request history for {userName}.
         </p>
       </header>
 
@@ -145,9 +145,17 @@ async function getHistoryPageData(searchParams: HistoryPageProps["searchParams"]
   }
 
   return {
-    userEmail: user.email ?? "authenticated user",
+    userName: getUserDisplayName(user),
     history,
   };
+}
+
+function getUserDisplayName(user: NonNullable<Awaited<ReturnType<typeof getUser>>>) {
+  const displayName = user.user_metadata.display_name;
+
+  return typeof displayName === "string" && displayName.trim().length > 0
+    ? displayName
+    : (user.email ?? "authenticated user");
 }
 
 function StatusBadge({
