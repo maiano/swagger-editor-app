@@ -13,7 +13,7 @@ import { MailIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 export default function SignUpComponent() {
-  const t = useTranslations("SignUp");
+  const t = useTranslations("ValidationForms");
   const router = useRouter();
 
   const [error, setError] = useState<string | null>(null);
@@ -51,7 +51,7 @@ export default function SignUpComponent() {
     <div className="flex min-h-screen items-center justify-center">
       <div className="w-full max-w-sm gap-6 rounded-lg border p-6 shadow-lg">
         <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
-          <h3>{t("title")}</h3>
+          <h3>{t("signUp.title")}</h3>
           <FieldLabel htmlFor="login">{t("login")}</FieldLabel>
           <InputGroup>
             <InputGroupInput
@@ -102,7 +102,7 @@ export default function SignUpComponent() {
           )}
 
           <Button disabled={!isValid} type="submit">
-            {t("submit")}
+            {t("signUp.submit")}
           </Button>
           {error && <FieldError>{error}</FieldError>}
         </form>

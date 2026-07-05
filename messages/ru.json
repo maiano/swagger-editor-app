@@ -23,21 +23,15 @@
   "LogoutButton": {
     "label": "Выйти"
   },
-  "SignIn": {
-    "title": "Вход",
-    "email": "Электронная почта",
-    "password": "Пароль",
-    "emailPlaceholder": "Введите свою электронную почту",
-    "passwordPlaceholder": "Введите пароль",
-    "submit": "Войти",
-    "errorGeneric": "Произошла ошибка",
-    "validation": {
-      "invalidEmail": "Введите корректный адрес электронной почты",
-      "passwordRequired": "Пароль обязателен"
-    }
-  },
-  "SignUp": {
-    "title": "Регистрация",
+  "ValidationForms": {
+    "signIn": {
+      "title": "Вход",
+      "submit": "Войти"
+    },
+    "signUp": {
+      "title": "Регистрация",
+      "submit": "Зарегистрироваться"
+    },
     "login": "Логин",
     "email": "Электронная почта",
     "password": "Пароль",
@@ -46,7 +40,6 @@
     "emailPlaceholder": "Введите свою электронную почту",
     "passwordPlaceholder": "Введите пароль",
     "confirmPasswordPlaceholder": "Пожалуйста, подтвердите пароль",
-    "submit": "Зарегистрироваться",
     "errorGeneric": "Произошла ошибка",
     "validation": {
       "loginRequired": "Логин обязателен",
@@ -71,38 +64,31 @@
     "requestFailedBeforeProxy": "Выполнение запроса не удалось до достижения прокси.",
     "proxyError": "Запрос к прокси не выполнен.",
     "emptyResponse": "(пустой ответ)",
+    "duration": "{duration} мс",
+    "bytes": "{bytes} байт",
+    "truncated": "усечено"
+  },
+  "HttpRequest": {
     "noParametersOrRequestBody": "Нет параметров или тела запроса.",
+    "requestBody": "Тело запроса",
+    "responses": "Ответы",
+    "parameters": "Параметры",
+    "deprecated": "Устарело",
+    "noParameters": "Нет параметров.",
+    "noRequestBody": "Нет тела запроса.",
+    "noResponses": "Нет ответов.",
+    "required": "обязательный",
     "body": "Тело запроса",
     "path": "Параметры пути",
     "query": "Параметры строки запроса",
-    "headers": "Заголовки запроса",
-    "required": "обязательный",
-    "duration": "{duration} мс",
-    "bytes": "{bytes} байт",
-    "truncated": "усечено",
-    "noParameters": "Нет параметров.",
-    "noRequestBody": "Нет тела запроса.",
-    "noResponses": "Нет ответов."
+    "headers": "Заголовки запроса"
   },
   "SwaggerViewer": {
     "viewer": "Средство просмотра",
     "viewerDescription": "Проверьте схему Swagger/OpenAPI, чтобы просмотреть конечные точки.",
     "noEndpoints": "В этой схеме не найдены конечные точки.",
-    "deprecated": "Устарело",
-    "parameters": "Параметры",
-    "requestBody": "Тело запроса",
-    "responses": "Ответы",
     "noContentSchema": "Схема не определена",
     "noSchemaExamples": "Нет схемы или примеров для {contentType}.",
-    "schema": "Схема",
-    "example": "Пример",
-    "path": "Параметры пути",
-    "query": "Параметры строки запроса",
-    "header": "Заголовок",
-    "required": "обязательный",
-    "noParameters": "Нет параметров.",
-    "noRequestBody": "Нет тела запроса.",
-    "noResponses": "Нет ответов.",
     "schemaOverview": "v{version} · {count} конечных точек"
   },
   "SwaggerEditor": {

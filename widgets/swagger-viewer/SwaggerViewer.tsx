@@ -131,7 +131,7 @@ function EndpointListItem({
 }
 
 function EndpointDetails({ endpoint }: { endpoint: OpenApiEndpoint }) {
-  const t = useTranslations("SwaggerViewer");
+  const t = useTranslations("HttpRequest");
 
   return (
     <div className="grid gap-3">
@@ -178,7 +178,7 @@ function MethodBadge({ method }: { method: OpenApiEndpoint["method"] }) {
 }
 
 function ParametersView({ parameters }: { parameters: OpenApiParameter[] }) {
-  const t = useTranslations("SwaggerViewer");
+  const t = useTranslations("HttpRequest");
   const locations: OpenApiParameterLocation[] = ["path", "query", "header", "cookie"];
 
   if (parameters.length === 0) {
@@ -225,7 +225,7 @@ function ParametersView({ parameters }: { parameters: OpenApiParameter[] }) {
 }
 
 function RequestBodyView({ content }: { content: Record<string, OpenApiMediaType> | undefined }) {
-  const t = useTranslations("SwaggerViewer");
+  const t = useTranslations("HttpRequest");
 
   if (!content || Object.keys(content).length === 0) {
     return <EmptySection title={t("requestBody")} message={t("noRequestBody")} />;
@@ -240,7 +240,7 @@ function RequestBodyView({ content }: { content: Record<string, OpenApiMediaType
 }
 
 function ResponsesView({ responses }: { responses: OpenApiResponse[] }) {
-  const t = useTranslations("SwaggerViewer");
+  const t = useTranslations("HttpRequest");
 
   if (responses.length === 0) {
     return <EmptySection title={t("responses")} message={t("noResponses")} />;

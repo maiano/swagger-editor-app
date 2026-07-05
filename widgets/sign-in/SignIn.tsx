@@ -13,7 +13,7 @@ import { useForm } from "react-hook-form";
 import { useTranslations } from "next-intl";
 
 export default function SignInComponent() {
-  const t = useTranslations("SignIn");
+  const t = useTranslations("ValidationForms");
   const router = useRouter();
 
   const [error, setError] = useState<string | null>(null);
@@ -44,7 +44,7 @@ export default function SignInComponent() {
     <div className="flex min-h-screen items-center justify-center">
       <div className="w-full max-w-sm gap-6 rounded-lg border p-6 shadow-lg">
         <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
-          <h3>{t("title")}</h3>
+          <h3>{t("signIn.title")}</h3>
           <FieldLabel htmlFor="email">{t("email")}</FieldLabel>
           <InputGroup>
             <InputGroupInput
@@ -70,7 +70,7 @@ export default function SignInComponent() {
           </InputGroup>
           {errors.password?.message && <FieldError>{t(errors.password.message)}</FieldError>}
 
-          <Button type="submit">{t("submit")}</Button>
+          <Button type="submit">{t("signIn.submit")}</Button>
           {error && <FieldError>{error}</FieldError>}
         </form>
       </div>

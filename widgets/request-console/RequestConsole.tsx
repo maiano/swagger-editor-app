@@ -275,7 +275,7 @@ function RequestDraftForm({
   draft: RequestDraft;
   onChange: (value: RequestDraft) => void;
 }) {
-  const t = useTranslations("RequestConsole");
+  const t = useTranslations("HttpRequest");
 
   if (endpoint.parameters.length === 0 && !endpoint.requestBody) {
     return (

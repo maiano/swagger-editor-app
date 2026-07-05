@@ -23,21 +23,15 @@
   "LogoutButton": {
     "label": "Logout"
   },
-  "SignIn": {
-    "title": "Sign In",
-    "email": "Email",
-    "password": "Password",
-    "emailPlaceholder": "Enter your email",
-    "passwordPlaceholder": "Enter password",
-    "submit": "Sign In",
-    "errorGeneric": "An error occurred",
-    "validation": {
-      "invalidEmail": "Enter a valid email address",
-      "passwordRequired": "Password is required"
-    }
-  },
-  "SignUp": {
-    "title": "Sign Up",
+  "ValidationForms": {
+    "signIn": {
+      "title": "Sign In",
+      "submit": "Sign In"
+    },
+    "signUp": {
+      "title": "Sign Up",
+      "submit": "Sign up"
+    },
     "login": "Login",
     "email": "Email",
     "password": "Password",
@@ -46,7 +40,6 @@
     "emailPlaceholder": "Enter your email",
     "passwordPlaceholder": "Enter password",
     "confirmPasswordPlaceholder": "Please, confirm password",
-    "submit": "Sign up",
     "errorGeneric": "An error occurred",
     "validation": {
       "loginRequired": "Login is required",
@@ -71,38 +64,31 @@
     "requestFailedBeforeProxy": "Request execution failed before reaching proxy.",
     "proxyError": "Proxy request failed.",
     "emptyResponse": "(empty response)",
+    "duration": "{duration} ms",
+    "bytes": "{bytes} bytes",
+    "truncated": "truncated"
+  },
+  "HttpRequest": {
     "noParametersOrRequestBody": "No parameters or request body.",
+    "requestBody": "Request body",
+    "responses": "Responses",
+    "parameters": "Parameters",
+    "deprecated": "Deprecated",
+    "noParameters": "No parameters.",
+    "noRequestBody": "No request body.",
+    "noResponses": "No responses.",
+    "required": "required",
     "body": "Body",
     "path": "Path",
     "query": "Query",
-    "headers": "Headers",
-    "required": "required",
-    "duration": "{duration} ms",
-    "bytes": "{bytes} bytes",
-    "truncated": "truncated",
-    "noParameters": "No parameters.",
-    "noRequestBody": "No request body.",
-    "noResponses": "No responses."
+    "headers": "Headers"
   },
   "SwaggerViewer": {
     "viewer": "Viewer",
     "viewerDescription": "Validate a Swagger/OpenAPI schema to inspect endpoints.",
     "noEndpoints": "No endpoints found in this schema.",
-    "deprecated": "Deprecated",
-    "parameters": "Parameters",
-    "requestBody": "Request body",
-    "responses": "Responses",
     "noContentSchema": "No content schema.",
     "noSchemaExamples": "No schema or examples for {contentType}.",
-    "schema": "Schema",
-    "example": "Example",
-    "path": "Path",
-    "query": "Query",
-    "header": "Header",
-    "required": "required",
-    "noParameters": "No parameters.",
-    "noRequestBody": "No request body.",
-    "noResponses": "No responses.",
     "schemaOverview": "v{version} · {count} endpoints"
   },
   "SwaggerEditor": {
