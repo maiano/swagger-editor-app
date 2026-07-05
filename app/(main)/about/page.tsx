@@ -1,34 +1,30 @@
 import Link from "next/link";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/ui/card";
+import { getTranslations } from "next-intl/server";
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  const t = await getTranslations("AboutPage");
   return (
     <main className="container mx-auto px-4 py-12">
-      <h1 className="mb-8 text-4xl font-bold">About</h1>
+      <h1 className="mb-8 text-4xl font-bold">{t("pageTitle")}</h1>
 
       <section className="mb-10">
-        <h2>RS School</h2>
-        <p className="text-muted-foreground">
-          This project was created as part of the RS School course — a free, community-based
-          JavaScript and Frontend education program.
-        </p>
+        <h2>{t("schoolTitle")}</h2>
+        <p className="text-muted-foreground">{t("schoolDescription")}</p>
       </section>
 
       <section className="mb-10">
-        <h2>Project</h2>
-        <p className="text-muted-foreground">
-          Swagger/OpenAPI editor and REST client for API exploration and testing. Built with
-          Next.js, TypeScript, Tailwind CSS, and Supabase.
-        </p>
+        <h2>{t("projectTitle")}</h2>
+        <p className="text-muted-foreground">{t("projectDescription")}</p>
       </section>
 
       <section>
-        <h2>Our Team</h2>
+        <h2>{t("teamTitle")}</h2>
         <div className="grid gap-4 md:grid-cols-3">
           <Card>
             <CardHeader>
               <CardTitle>Aleksei</CardTitle>
-              <CardDescription>Team Lead</CardDescription>
+              <CardDescription>{t("teamLead")}</CardDescription>
             </CardHeader>
             <CardContent>
               <Link
@@ -44,7 +40,7 @@ export default function AboutPage() {
           <Card>
             <CardHeader>
               <CardTitle>Katya</CardTitle>
-              <CardDescription>Developer</CardDescription>
+              <CardDescription>{t("developer")}</CardDescription>
             </CardHeader>
             <CardContent>
               <Link
@@ -60,7 +56,7 @@ export default function AboutPage() {
           <Card>
             <CardHeader>
               <CardTitle>Dilafruz</CardTitle>
-              <CardDescription>Developer</CardDescription>
+              <CardDescription>{t("developer")}</CardDescription>
             </CardHeader>
             <CardContent>
               <Link

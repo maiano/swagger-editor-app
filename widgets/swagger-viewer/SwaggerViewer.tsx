@@ -2,6 +2,7 @@
 
 import { ServerIcon } from "lucide-react";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 
 import type {
   OpenApiEndpoint,
@@ -19,6 +20,7 @@ import { Separator } from "@/shared/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/tabs";
 
 export function SwaggerViewer() {
+  const t = useTranslations("SwaggerViewer");
   const { document, selectedEndpoint, selectedEndpointId, setSelectedEndpointId } =
     useOpenApiWorkspace();
 
@@ -26,8 +28,8 @@ export function SwaggerViewer() {
     return (
       <Card className="border-panel-border bg-panel text-panel-foreground">
         <CardHeader>
-          <CardTitle>Viewer</CardTitle>
-          <CardDescription>Validate a Swagger/OpenAPI schema to inspect endpoints.</CardDescription>
+          <CardTitle>{t("viewer")}</CardTitle>
+          <CardDescription>{t("viewerDescription")}</CardDescription>
         </CardHeader>
       </Card>
     );
@@ -38,7 +40,10 @@ export function SwaggerViewer() {
       <CardHeader>
         <CardTitle>{document.title}</CardTitle>
         <CardDescription>
-          v{document.version} · {document.endpoints.length} endpoints
+          {t("schemaOverview", {
+            version: document.version,
+            count: document.endpoints.length,
+          })}
         </CardDescription>
       </CardHeader>
       <CardContent className="grid gap-4">
@@ -51,7 +56,7 @@ export function SwaggerViewer() {
             />
           ) : (
             <div className="border-border bg-muted/30 text-muted-foreground rounded-md border px-3 py-2 text-sm">
-              No endpoints found in this schema.
+              {t("noEndpoints")}
             </div>
           )}
         </div>
@@ -126,12 +131,14 @@ function EndpointListItem({
 }
 
 function EndpointDetails({ endpoint }: { endpoint: OpenApiEndpoint }) {
+  const t = useTranslations("HttpRequest");
+
   return (
     <div className="grid gap-3">
       <div className="flex flex-wrap items-center gap-2">
         <MethodBadge method={endpoint.method} />
         <code className="break-all">{endpoint.path}</code>
-        {endpoint.deprecated ? <Badge variant="destructive">Deprecated</Badge> : null}
+        {endpoint.deprecated ? <Badge variant="destructive">{t("deprecated")}</Badge> : null}
       </div>
       {endpoint.description || endpoint.summary ? (
         <p className="text-sm">{endpoint.description ?? endpoint.summary}</p>
@@ -143,10 +150,10 @@ function EndpointDetails({ endpoint }: { endpoint: OpenApiEndpoint }) {
             <span className="truncate font-mono text-xs">{endpoint.serverUrl}</span>
           </div>
         ) : null}
-        <EndpointMeta label="Parameters" value={endpoint.parameters.length} />
-        <EndpointMeta label="Responses" value={endpoint.responses.length} />
+        <EndpointMeta label={t("parameters")} value={endpoint.parameters.length} />
+        <EndpointMeta label={t("responses")} value={endpoint.responses.length} />
         <EndpointMeta
-          label="Request body"
+          label={t("requestBody")}
           value={endpoint.requestBody ? Object.keys(endpoint.requestBody.content).length : 0}
         />
       </div>
@@ -171,15 +178,16 @@ function MethodBadge({ method }: { method: OpenApiEndpoint["method"] }) {
 }
 
 function ParametersView({ parameters }: { parameters: OpenApiParameter[] }) {
+  const t = useTranslations("HttpRequest");
   const locations: OpenApiParameterLocation[] = ["path", "query", "header", "cookie"];
 
   if (parameters.length === 0) {
-    return <EmptySection title="Parameters" message="No parameters." />;
+    return <EmptySection title={t("parameters")} message={t("noParameters")} />;
   }
 
   return (
     <section className="grid gap-2">
-      <h3 className="text-sm">Parameters</h3>
+      <h3 className="text-sm">{t("parameters")}</h3>
       {locations.map((location) => {
         const locationParameters = parameters.filter((parameter) => parameter.in === location);
 
@@ -198,7 +206,7 @@ function ParametersView({ parameters }: { parameters: OpenApiParameter[] }) {
                 >
                   <div className="flex flex-wrap items-center gap-2">
                     <span className="font-mono text-xs">{parameter.name}</span>
-                    {parameter.required ? <Badge variant="outline">required</Badge> : null}
+                    {parameter.required ? <Badge variant="outline">{t("required")}</Badge> : null}
                   </div>
                   {parameter.description ? (
                     <p className="text-muted-foreground text-xs">{parameter.description}</p>
@@ -217,26 +225,30 @@ function ParametersView({ parameters }: { parameters: OpenApiParameter[] }) {
 }
 
 function RequestBodyView({ content }: { content: Record<string, OpenApiMediaType> | undefined }) {
+  const t = useTranslations("HttpRequest");
+
   if (!content || Object.keys(content).length === 0) {
-    return <EmptySection title="Request body" message="No request body." />;
+    return <EmptySection title={t("requestBody")} message={t("noRequestBody")} />;
   }
 
   return (
     <section className="grid gap-2">
-      <h3 className="text-sm">Request body</h3>
+      <h3 className="text-sm">{t("requestBody")}</h3>
       <MediaTypeTabs content={content} />
     </section>
   );
 }
 
 function ResponsesView({ responses }: { responses: OpenApiResponse[] }) {
+  const t = useTranslations("HttpRequest");
+
   if (responses.length === 0) {
-    return <EmptySection title="Responses" message="No responses." />;
+    return <EmptySection title={t("responses")} message={t("noResponses")} />;
   }
 
   return (
     <section className="grid gap-2">
-      <h3 className="text-sm">Responses</h3>
+      <h3 className="text-sm">{t("responses")}</h3>
       <div className="grid gap-2">
         {responses.map((response) => (
           <div key={response.statusCode} className="border-border grid gap-2 rounded-md border p-3">
@@ -257,9 +269,9 @@ function ResponsesView({ responses }: { responses: OpenApiResponse[] }) {
 function MediaTypeTabs({ content }: { content: Record<string, OpenApiMediaType> | undefined }) {
   const defaultContentType = content ? getDefaultContentType(content) : "";
   const [selectedContentType, setSelectedContentType] = useState(defaultContentType);
-
+  const t = useTranslations("SwaggerViewer");
   if (!content || Object.keys(content).length === 0) {
-    return <div className="text-muted-foreground text-xs">No content schema.</div>;
+    return <div className="text-muted-foreground text-xs">{t("noContentSchema")}</div>;
   }
 
   const entries = Object.entries(content);
@@ -306,10 +318,12 @@ function MediaTypePanel({
 }) {
   const panels = getMediaTypePanels(mediaType);
 
+  const t = useTranslations("SwaggerViewer");
+
   if (panels.length === 0) {
     return (
       <div className="bg-muted/20 text-muted-foreground rounded-md px-3 py-2 text-xs">
-        No schema or examples for {contentType}.
+        {t("noSchemaExamples", { contentType })}
       </div>
     );
   }

@@ -10,8 +10,10 @@ import { FieldError, FieldLabel } from "@/shared/ui/field";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/shared/ui/input-group";
 import { Button } from "@/shared/ui/button";
 import { MailIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 export default function SignUpComponent() {
+  const t = useTranslations("ValidationForms");
   const router = useRouter();
 
   const [error, setError] = useState<string | null>(null);
@@ -41,7 +43,7 @@ export default function SignUpComponent() {
       router.push("/");
       router.refresh();
     } catch (error: unknown) {
-      setError(error instanceof Error ? error.message : "An error occurred");
+      setError(error instanceof Error ? error.message : t("errorGeneric"));
     }
   };
 
@@ -49,58 +51,58 @@ export default function SignUpComponent() {
     <div className="flex min-h-screen items-center justify-center">
       <div className="w-full max-w-sm gap-6 rounded-lg border p-6 shadow-lg">
         <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
-          <h3>Sign Up</h3>
-          <FieldLabel htmlFor="login">Login</FieldLabel>
+          <h3>{t("signUp.title")}</h3>
+          <FieldLabel htmlFor="login">{t("login")}</FieldLabel>
           <InputGroup>
             <InputGroupInput
               {...register("login")}
               id="login"
               type="text"
-              placeholder="Enter your login"
+              placeholder={t("loginPlaceholder")}
             />
           </InputGroup>
-          {errors.login?.message && <FieldError>{errors.login.message}</FieldError>}
+          {errors.login?.message && <FieldError>{t(errors.login.message)}</FieldError>}
 
-          <FieldLabel htmlFor="email">Email</FieldLabel>
+          <FieldLabel htmlFor="email">{t("email")}</FieldLabel>
           <InputGroup>
             <InputGroupInput
               {...register("email")}
               id="email"
               type="email"
-              placeholder="Enter your email"
+              placeholder={t("emailPlaceholder")}
             />
             <InputGroupAddon>
               <MailIcon />
             </InputGroupAddon>
           </InputGroup>
-          {errors.email?.message && <FieldError>{errors.email.message}</FieldError>}
+          {errors.email?.message && <FieldError>{t(errors.email.message)}</FieldError>}
 
-          <FieldLabel htmlFor="password">Password</FieldLabel>
+          <FieldLabel htmlFor="password">{t("password")}</FieldLabel>
           <InputGroup>
             <InputGroupInput
               {...register("password")}
               id="password"
               type="password"
-              placeholder="Enter password"
+              placeholder={t("passwordPlaceholder")}
             />
           </InputGroup>
-          {errors.password?.message && <FieldError>{errors.password.message}</FieldError>}
+          {errors.password?.message && <FieldError>{t(errors.password.message)}</FieldError>}
 
-          <FieldLabel htmlFor="confirmPassword">Confirm password</FieldLabel>
+          <FieldLabel htmlFor="confirmPassword">{t("confirmPassword")}</FieldLabel>
           <InputGroup>
             <InputGroupInput
               {...register("confirmPassword")}
               id="confirmPassword"
               type="password"
-              placeholder="Please, confirm password"
+              placeholder={t("confirmPasswordPlaceholder")}
             />
           </InputGroup>
           {errors.confirmPassword?.message && (
-            <FieldError>{errors.confirmPassword.message}</FieldError>
+            <FieldError>{t(errors.confirmPassword.message)}</FieldError>
           )}
 
           <Button disabled={!isValid} type="submit">
-            Sign up
+            {t("signUp.submit")}
           </Button>
           {error && <FieldError>{error}</FieldError>}
         </form>

@@ -1,10 +1,13 @@
 import "@testing-library/jest-dom/vitest";
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it, vi, beforeEach } from "vitest";
-import HeaderContent from "./Header";
+import Header from "./Header";
 import { getUser } from "@/shared/lib/supabase/utils";
+import { NextIntlClientProvider } from "next-intl";
+import messages from "../../messages/en.json";
 
 const pushMock = vi.fn();
+const changeLocaleAction = vi.fn();
 
 vi.mock("next/link", () => ({
   default: ({ children, href }: { children: React.ReactNode; href: string }) => (
@@ -22,6 +25,20 @@ vi.mock("next/navigation", () => ({
   }),
 }));
 
+vi.mock("next-intl/server", () => ({
+  getTranslations: vi.fn().mockResolvedValue(
+    (key: string) =>
+      ({
+        header: "Swagger/OpenAPI UI",
+        editor: "Editor",
+        about: "About",
+        history: "History",
+        signIn: "Sign In",
+        signUp: "Sign Up",
+      })[key]
+  ),
+}));
+
 describe("HeaderContent", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -30,8 +47,12 @@ describe("HeaderContent", () => {
   it("renders app title", async () => {
     vi.mocked(getUser).mockResolvedValue(null);
 
-    const Component = await HeaderContent();
-    render(Component);
+    const Component = await Header({ changeLocaleAction });
+    render(
+      <NextIntlClientProvider locale="en" messages={messages}>
+        {Component}
+      </NextIntlClientProvider>
+    );
 
     expect(screen.getByText("Swagger/OpenAPI UI")).toBeInTheDocument();
   });
@@ -39,8 +60,12 @@ describe("HeaderContent", () => {
   it("renders sign in and sign up buttons when user is not authenticated", async () => {
     vi.mocked(getUser).mockResolvedValue(null);
 
-    const Component = await HeaderContent();
-    render(Component);
+    const Component = await Header({ changeLocaleAction });
+    render(
+      <NextIntlClientProvider locale="en" messages={messages}>
+        {Component}
+      </NextIntlClientProvider>
+    );
 
     expect(screen.getByRole("link", { name: /sign in/i })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /sign up/i })).toBeInTheDocument();
@@ -54,9 +79,13 @@ describe("HeaderContent", () => {
       email: "test@example.com",
     } as never);
 
-    const Component = await HeaderContent();
+    const Component = await Header({ changeLocaleAction });
 
-    render(Component);
+    render(
+      <NextIntlClientProvider locale="en" messages={messages}>
+        {Component}
+      </NextIntlClientProvider>
+    );
 
     expect(screen.getByRole("link", { name: /history/i })).toBeInTheDocument();
     expect(await screen.findByText(/logout/i)).toBeInTheDocument();

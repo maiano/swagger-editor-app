@@ -1,11 +1,13 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { NextIntlClientProvider } from "next-intl";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { OpenApiDocument, OpenApiEndpoint } from "@/entities/openapi-document/model";
 import type { OpenApiWorkspaceValue, RequestDraft } from "@/features/openapi-workspace/model";
 
 import { RequestConsole } from "./RequestConsole";
+import messages from "../../messages/en.json";
 
 const setRequestDraftMock = vi.fn();
 let workspaceValue: OpenApiWorkspaceValue;
@@ -123,7 +125,7 @@ describe("RequestConsole execution", () => {
       )
     );
 
-    render(<RequestConsole />);
+    renderRequestConsole();
 
     await userEvent.click(screen.getByRole("button", { name: /execute/i }));
 
@@ -173,7 +175,7 @@ describe("RequestConsole execution", () => {
       )
     );
 
-    render(<RequestConsole />);
+    renderRequestConsole();
 
     await userEvent.click(screen.getByRole("button", { name: /execute/i }));
 
@@ -204,7 +206,7 @@ describe("RequestConsole execution", () => {
       )
     );
 
-    render(<RequestConsole />);
+    renderRequestConsole();
 
     await userEvent.click(screen.getByRole("button", { name: /execute/i }));
     expect(await screen.findByText(/"id": 10/)).toBeTruthy();
@@ -219,3 +221,11 @@ describe("RequestConsole execution", () => {
     expect(setRequestDraftMock).toHaveBeenCalled();
   });
 });
+
+function renderRequestConsole() {
+  render(
+    <NextIntlClientProvider locale="en" messages={messages}>
+      <RequestConsole />
+    </NextIntlClientProvider>
+  );
+}

@@ -2,6 +2,7 @@
 
 import { CopyIcon, PlayIcon } from "lucide-react";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 
 import {
   buildCurlCommand,
@@ -62,6 +63,7 @@ const IDLE_EXECUTE_STATE: ExecuteState = {
 };
 
 export function RequestConsole() {
+  const t = useTranslations("RequestConsole");
   const { document, selectedEndpoint, requestDraftsByEndpointId, setRequestDraft } =
     useOpenApiWorkspace();
   const [copyState, setCopyState] = useState<{
@@ -80,8 +82,8 @@ export function RequestConsole() {
     return (
       <Card className="border-panel-border bg-panel text-panel-foreground">
         <CardHeader>
-          <CardTitle>Request Console</CardTitle>
-          <CardDescription>Select an endpoint to prepare a request.</CardDescription>
+          <CardTitle>{t("title")}</CardTitle>
+          <CardDescription>{t("selectEndpoint")}</CardDescription>
         </CardHeader>
       </Card>
     );
@@ -138,7 +140,7 @@ export function RequestConsole() {
       setExecuteState({
         endpointId: selectedEndpointId,
         status: "failed",
-        message: "Request execution failed before reaching proxy.",
+        message: t("requestFailedBeforeProxy"),
       });
     }
   }
@@ -146,8 +148,8 @@ export function RequestConsole() {
   return (
     <Card className="border-panel-border bg-panel text-panel-foreground">
       <CardHeader>
-        <CardTitle>Request Console</CardTitle>
-        <CardDescription>Request execution will be connected through proxy later.</CardDescription>
+        <CardTitle>{t("title")}</CardTitle>
+        <CardDescription>{t("description")}</CardDescription>
       </CardHeader>
       <CardContent className="grid gap-4">
         <div className="request-console grid gap-3 p-3">
@@ -164,11 +166,11 @@ export function RequestConsole() {
             <h3 className="text-sm">cURL</h3>
             <Button type="button" variant="outline" size="sm" onClick={copyCurl}>
               <CopyIcon data-icon="inline-start" />
-              {copyStatus === "copied" ? "Copied" : "Copy"}
+              {copyStatus === "copied" ? t("copied") : t("copy")}
             </Button>
           </div>
           {copyStatus === "failed" ? (
-            <p className="text-status-error text-xs">Clipboard is unavailable.</p>
+            <p className="text-status-error text-xs">{t("clipboardUnavailable")}</p>
           ) : null}
           <pre className="border-border bg-editor text-editor-foreground max-h-56 overflow-auto rounded-md border p-3 text-xs">
             {curl}
@@ -180,7 +182,7 @@ export function RequestConsole() {
           disabled={visibleExecuteState.status === "loading"}
         >
           <PlayIcon data-icon="inline-start" />
-          {visibleExecuteState.status === "loading" ? "Executing" : "Execute"}
+          {visibleExecuteState.status === "loading" ? t("executing") : t("execute")}
         </Button>
         <ResponsePanel state={visibleExecuteState} />
       </CardContent>
@@ -189,10 +191,12 @@ export function RequestConsole() {
 }
 
 function ResponsePanel({ state }: { state: ExecuteState }) {
+  const t = useTranslations("RequestConsole");
+
   if (state.status === "idle") {
     return (
       <section className="border-border bg-muted/20 text-muted-foreground rounded-md border px-3 py-2 text-xs">
-        Execute a request to see the proxy response.
+        {t("executePrompt")}
       </section>
     );
   }
@@ -200,7 +204,7 @@ function ResponsePanel({ state }: { state: ExecuteState }) {
   if (state.status === "loading") {
     return (
       <section className="border-border bg-muted/20 text-muted-foreground rounded-md border px-3 py-2 text-xs">
-        Executing through server proxy...
+        {t("executeProxy")}
       </section>
     );
   }
@@ -208,7 +212,7 @@ function ResponsePanel({ state }: { state: ExecuteState }) {
   if (state.status === "failed") {
     return (
       <section className="border-status-error/30 bg-status-error/10 text-status-error rounded-md border px-3 py-2 text-xs">
-        {state.message}
+        {state.message || t("requestFailedBeforeProxy")}
       </section>
     );
   }
@@ -219,7 +223,7 @@ function ResponsePanel({ state }: { state: ExecuteState }) {
     return (
       <section className="border-status-error/30 bg-status-error/10 text-status-error grid gap-1 rounded-md border px-3 py-2 text-xs">
         <div className="font-medium">{result.error?.type ?? "proxy_error"}</div>
-        <div>{result.error?.message ?? "Proxy request failed."}</div>
+        <div>{result.error?.message ?? t("proxyError")}</div>
       </section>
     );
   }
@@ -233,16 +237,18 @@ function ResponsePanel({ state }: { state: ExecuteState }) {
         <Badge variant="outline" className={statusTone}>
           {result.response.status} {result.response.statusText}
         </Badge>
-        <span className="text-muted-foreground">{result.response.durationMs} ms</span>
+        <span className="text-muted-foreground">
+          {t("duration", { duration: result.response.durationMs })}
+        </span>
         {result.analytics ? (
           <span className="text-muted-foreground">
-            {result.analytics.responseSizeBytes.toLocaleString()} bytes
+            {t("bytes", { bytes: result.analytics.responseSizeBytes.toLocaleString() })}
           </span>
         ) : null}
-        {result.response.truncated ? <Badge variant="secondary">truncated</Badge> : null}
+        {result.response.truncated ? <Badge variant="secondary">{t("truncated")}</Badge> : null}
       </div>
       <pre className="border-border bg-editor text-editor-foreground max-h-56 overflow-auto rounded-md border p-3 text-xs whitespace-pre-wrap">
-        {responseBody || "(empty response)"}
+        {responseBody || t("emptyResponse")}
       </pre>
     </section>
   );
@@ -269,10 +275,12 @@ function RequestDraftForm({
   draft: RequestDraft;
   onChange: (value: RequestDraft) => void;
 }) {
+  const t = useTranslations("HttpRequest");
+
   if (endpoint.parameters.length === 0 && !endpoint.requestBody) {
     return (
       <div className="border-border bg-muted/20 text-muted-foreground rounded-md border px-3 py-2 text-xs">
-        No parameters or request body.
+        {t("noParametersOrRequestBody")}
       </div>
     );
   }
@@ -284,19 +292,19 @@ function RequestDraftForm({
   return (
     <div className="grid gap-3">
       <ParameterInputs
-        title="Path"
+        title={t("path")}
         values={draft.pathParams}
         parameters={pathParameters}
         onChange={(pathParams) => onChange({ ...draft, pathParams })}
       />
       <ParameterInputs
-        title="Query"
+        title={t("query")}
         values={draft.query}
         parameters={queryParameters}
         onChange={(query) => onChange({ ...draft, query })}
       />
       <ParameterInputs
-        title="Headers"
+        title={t("headers")}
         values={draft.headers}
         parameters={headerParameters}
         onChange={(headers) => onChange({ ...draft, headers })}
@@ -304,7 +312,7 @@ function RequestDraftForm({
       {endpoint.requestBody ? (
         <section className="grid gap-2">
           <div className="flex flex-wrap items-center gap-2">
-            <h3 className="text-sm">Body</h3>
+            <h3 className="text-sm">{t("body")}</h3>
             <Badge variant="secondary">
               {Object.keys(endpoint.requestBody.content).join(", ")}
             </Badge>

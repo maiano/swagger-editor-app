@@ -1,6 +1,7 @@
 "use client";
 
 import { AlertTriangleIcon, CheckCircle2Icon, CloudUploadIcon, Loader2Icon } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 
 import { parseOpenApiSchema } from "@/entities/openapi-document/model";
@@ -12,6 +13,7 @@ import { Card, CardAction, CardContent, CardHeader, CardTitle } from "@/shared/u
 import { CodeEditor } from "./CodeEditor";
 
 export function SwaggerEditor() {
+  const t = useTranslations("SwaggerEditor");
   const workspace = useOpenApiWorkspace();
   const isValidating = workspace.status === "validating";
   const [saveState, setSaveState] = useState<"idle" | "saving" | "saved" | "failed">("idle");
@@ -22,7 +24,7 @@ export function SwaggerEditor() {
 
     if (!trimmedText) {
       workspace.setStatus("invalid");
-      workspace.setError("Schema text is empty");
+      workspace.setError(t("schemaEmptyError"));
       workspace.setDocument(null);
       workspace.setSelectedEndpointId(null);
       return;
@@ -67,21 +69,21 @@ export function SwaggerEditor() {
 
       if (!response.ok || !result.ok) {
         setSaveState("failed");
-        setSaveError(result.error ?? "Failed to save schema.");
+        setSaveError(result.error ?? t("saveFailed"));
         return;
       }
 
       setSaveState("saved");
     } catch {
       setSaveState("failed");
-      setSaveError("Failed to reach schema save endpoint.");
+      setSaveError(t("saveNetworkError"));
     }
   }
 
   return (
     <Card className="border-panel-border bg-panel text-panel-foreground">
       <CardHeader className="border-b">
-        <CardTitle>Swagger/OpenAPI Editor</CardTitle>
+        <CardTitle>{t("title")}</CardTitle>
         <CardAction className="flex items-center gap-2">
           <Badge variant="outline" className="uppercase">
             {workspace.schemaFormat}
@@ -94,7 +96,7 @@ export function SwaggerEditor() {
             {isValidating ? (
               <Loader2Icon className="animate-spin" data-icon="inline-start" />
             ) : null}
-            Validate
+            {t("validate")}
           </Button>
           {workspace.isAuthenticated ? (
             <Button
@@ -108,7 +110,7 @@ export function SwaggerEditor() {
               ) : (
                 <CloudUploadIcon data-icon="inline-start" />
               )}
-              Save
+              {t("save")}
             </Button>
           ) : null}
         </CardAction>
@@ -141,6 +143,8 @@ interface ValidationStatusProps {
 }
 
 function ValidationStatus({ status, error, title, version, endpointCount }: ValidationStatusProps) {
+  const t = useTranslations("SwaggerEditor");
+
   if (status === "valid") {
     return (
       <div className="border-status-success/30 bg-status-success/10 text-status-success flex items-center justify-between gap-3 rounded-md border px-3 py-2 text-sm">
@@ -150,7 +154,7 @@ function ValidationStatus({ status, error, title, version, endpointCount }: Vali
             {title} {version}
           </span>
         </span>
-        <span className="font-mono text-xs">{endpointCount} endpoints</span>
+        <span className="font-mono text-xs">{t("endpointCount", { count: endpointCount })}</span>
       </div>
     );
   }
@@ -166,7 +170,7 @@ function ValidationStatus({ status, error, title, version, endpointCount }: Vali
 
   return (
     <div className="border-border bg-muted/30 text-muted-foreground rounded-md border px-3 py-2 text-sm">
-      {status === "validating" ? "Validating..." : "Ready"}
+      {status === "validating" ? t("validating") : t("ready")}
     </div>
   );
 }
@@ -178,6 +182,8 @@ function SaveStatus({
   state: "idle" | "saving" | "saved" | "failed";
   error: string | null;
 }) {
+  const t = useTranslations("SwaggerEditor");
+
   if (state === "idle") {
     return null;
   }
@@ -185,7 +191,7 @@ function SaveStatus({
   if (state === "saved") {
     return (
       <div className="border-status-success/30 bg-status-success/10 text-status-success rounded-md border px-3 py-2 text-sm">
-        Schema saved.
+        {t("saveSuccess")}
       </div>
     );
   }
@@ -193,14 +199,14 @@ function SaveStatus({
   if (state === "failed") {
     return (
       <div className="border-status-error/30 bg-status-error/10 text-status-error rounded-md border px-3 py-2 text-sm">
-        {error ?? "Failed to save schema."}
+        {error ?? t("saveFailed")}
       </div>
     );
   }
 
   return (
     <div className="border-border bg-muted/30 text-muted-foreground rounded-md border px-3 py-2 text-sm">
-      Saving schema...
+      {t("saving")}
     </div>
   );
 }

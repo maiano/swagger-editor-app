@@ -10,8 +10,10 @@ import { MailIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { useTranslations } from "next-intl";
 
 export default function SignInComponent() {
+  const t = useTranslations("ValidationForms");
   const router = useRouter();
 
   const [error, setError] = useState<string | null>(null);
@@ -34,7 +36,7 @@ export default function SignInComponent() {
       router.push("/");
       router.refresh();
     } catch (error: unknown) {
-      setError(error instanceof Error ? error.message : "An error occurred");
+      setError(error instanceof Error ? error.message : t("errorGeneric"));
     }
   };
 
@@ -42,33 +44,33 @@ export default function SignInComponent() {
     <div className="flex min-h-screen items-center justify-center">
       <div className="w-full max-w-sm gap-6 rounded-lg border p-6 shadow-lg">
         <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
-          <h3>Sign In</h3>
-          <FieldLabel htmlFor="email">Email</FieldLabel>
+          <h3>{t("signIn.title")}</h3>
+          <FieldLabel htmlFor="email">{t("email")}</FieldLabel>
           <InputGroup>
             <InputGroupInput
               {...register("email")}
               id="email"
               type="email"
-              placeholder="Enter your email"
+              placeholder={t("emailPlaceholder")}
             />
             <InputGroupAddon>
               <MailIcon />
             </InputGroupAddon>
           </InputGroup>
-          {errors.email?.message && <FieldError>{errors.email.message}</FieldError>}
+          {errors.email?.message && <FieldError>{t(errors.email.message)}</FieldError>}
 
-          <FieldLabel htmlFor="password">Password</FieldLabel>
+          <FieldLabel htmlFor="password">{t("password")}</FieldLabel>
           <InputGroup>
             <InputGroupInput
               {...register("password")}
               id="password"
               type="password"
-              placeholder="Enter password"
+              placeholder={t("passwordPlaceholder")}
             />
           </InputGroup>
-          {errors.password?.message && <FieldError>{errors.password.message}</FieldError>}
+          {errors.password?.message && <FieldError>{t(errors.password.message)}</FieldError>}
 
-          <Button type="submit">Sign In</Button>
+          <Button type="submit">{t("signIn.submit")}</Button>
           {error && <FieldError>{error}</FieldError>}
         </form>
       </div>
