@@ -2,10 +2,11 @@
   "RootLayout": {
     "title": "Интерфейс Swagger/OpenAPI"
   },
-  "HomePage": {
-    "header": "Интерфейс Swagger/OpenAPI",
+  "Common": {
+    "appName": "Интерфейс Swagger/OpenAPI",
     "signIn": "Войти",
     "signUp": "Регистрация",
+    "signOut": "Выйти",
     "history": "История",
     "about": "О проекте",
     "editor": "Редактор"
@@ -19,9 +20,6 @@
     "projectDescription": "Редактор Swagger/OpenAPI и REST-клиент для исследования и тестирования API. Создан с помощью Next.js, TypeScript, Tailwind CSS и Supabase.",
     "teamLead": "Руководитель команды",
     "developer": "Разработчик"
-  },
-  "LogoutButton": {
-    "label": "Выйти"
   },
   "HistoryPage": {
     "title": "История запросов",

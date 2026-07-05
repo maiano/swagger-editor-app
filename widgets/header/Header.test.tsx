@@ -29,7 +29,7 @@ vi.mock("next-intl/server", () => ({
   getTranslations: vi.fn().mockResolvedValue(
     (key: string) =>
       ({
-        header: "Swagger/OpenAPI UI",
+        appName: "Swagger/OpenAPI UI",
         editor: "Editor",
         about: "About",
         history: "History",
