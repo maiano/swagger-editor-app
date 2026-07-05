@@ -28,7 +28,7 @@ describe("HeaderContent", () => {
   });
 
   it("renders app title", async () => {
-    vi.mocked(getUser).mockResolvedValue(undefined);
+    vi.mocked(getUser).mockResolvedValue(null);
 
     const Component = await HeaderContent();
     render(Component);
@@ -37,7 +37,7 @@ describe("HeaderContent", () => {
   });
 
   it("renders sign in and sign up buttons when user is not authenticated", async () => {
-    vi.mocked(getUser).mockResolvedValue(undefined);
+    vi.mocked(getUser).mockResolvedValue(null);
 
     const Component = await HeaderContent();
     render(Component);
