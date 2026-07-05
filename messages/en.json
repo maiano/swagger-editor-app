@@ -23,6 +23,31 @@
   "LogoutButton": {
     "label": "Logout"
   },
+  "HistoryPage": {
+    "title": "Request History",
+    "description": "Server-rendered request history for {userName}.",
+    "emptyTitle": "No requests yet",
+    "emptyDescription": "Execute a request from the editor to see it appear here.",
+    "openEditor": "Open editor",
+    "requestsTitle": "Requests",
+    "recordedRequests": "{count} recorded requests.",
+    "columns": {
+      "time": "Time",
+      "method": "Method",
+      "endpoint": "Endpoint",
+      "status": "Status",
+      "duration": "Duration",
+      "size": "Size",
+      "error": "Error"
+    },
+    "failed": "Failed",
+    "none": "None",
+    "previous": "Previous",
+    "previousPage": "Previous page",
+    "next": "Next",
+    "nextPage": "Next page",
+    "pageIndicator": "Page {page} of {totalPages}"
+  },
   "ValidationForms": {
     "signIn": {
       "title": "Sign In",
