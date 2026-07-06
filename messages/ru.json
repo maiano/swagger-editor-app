@@ -121,6 +121,8 @@
   "SwaggerEditor": {
     "title": "Редактор Swagger/OpenAPI",
     "validate": "Проверить",
+    "jsonFormat": "JSON",
+    "yamlFormat": "YAML",
     "save": "Сохранить",
     "saving": "Сохраняем схему...",
     "saveSuccess": "Схема сохранена.",
@@ -129,6 +131,7 @@
     "validating": "Проверяется...",
     "ready": "Готово",
     "schemaEmptyError": "Текст схемы пуст",
+    "formatSwitchError": "Исправьте ошибки схемы перед конвертацией в {format}.",
     "endpointCount": "{count} конечных точек"
   }
 }
