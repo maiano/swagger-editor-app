@@ -81,7 +81,7 @@
   "RequestConsole": {
     "title": "Request Console",
     "selectEndpoint": "Select an endpoint to prepare a request.",
-    "description": "Request execution will be connected through proxy later.",
+    "description": "Build a request, copy cURL, or run it through the server proxy.",
     "copy": "Copy",
     "copied": "Copied",
     "clipboardUnavailable": "Clipboard is unavailable.",
