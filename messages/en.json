@@ -31,6 +31,7 @@
     "emptyTitle": "No requests yet",
     "emptyDescription": "Execute a request from the editor to see it appear here.",
     "openEditor": "Open editor",
+    "openViewer": "Open viewer",
     "requestsTitle": "Requests",
     "recordedRequests": "{count} recorded requests.",
     "columns": {

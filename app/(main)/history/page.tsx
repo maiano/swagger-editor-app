@@ -36,9 +36,12 @@ export default async function HistoryPage({ searchParams }: HistoryPageProps) {
             <CardTitle>{t("emptyTitle")}</CardTitle>
             <CardDescription>{t("emptyDescription")}</CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="flex flex-wrap gap-2">
             <Button asChild>
               <Link href={routes.home}>{t("openEditor")}</Link>
+            </Button>
+            <Button asChild variant="outline">
+              <Link href={`${routes.home}#viewer`}>{t("openViewer")}</Link>
             </Button>
           </CardContent>
         </Card>
