@@ -11,5 +11,38 @@ export default defineConfig({
   test: {
     environment: "happy-dom",
     globals: true,
+    coverage: {
+      provider: "v8",
+      reporter: ["text", "html"],
+      include: [
+        "app/api/**/*.{ts,tsx}",
+        "entities/**/*.{ts,tsx}",
+        "server/**/*.{ts,tsx}",
+        "widgets/header/**/*.{ts,tsx}",
+        "widgets/logout-button/**/*.{ts,tsx}",
+        "widgets/request-console/**/*.{ts,tsx}",
+      ],
+      exclude: [
+        "**/*.test.{ts,tsx}",
+        "**/*.d.ts",
+        "**/*.types.ts",
+        "**/types.ts",
+        "**/index.ts",
+        "entities/openapi-document/model/errors.ts",
+        "server/analytics/load-request-history-page.ts",
+        "server/analytics/noop-request-analytics-repository.ts",
+        "server/proxy/resolve-target-host.ts",
+        "server/schema/create-saved-schema-repository.ts",
+        "server/schema/load-saved-schema.ts",
+        "server/schema/save-schema.ts",
+        "shared/ui/**",
+      ],
+      thresholds: {
+        statements: 80,
+        branches: 65,
+        functions: 80,
+        lines: 80,
+      },
+    },
   },
 });
