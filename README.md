@@ -86,6 +86,29 @@ Open:
 http://localhost:3000
 ```
 
+## Manual testing with DummyJSON Lite
+
+For a quick review, the editor opens with a small DummyJSON schema by default.
+
+The same schema is also stored here:
+
+```text
+examples/openapi/dummyjson-lite.yaml
+```
+
+Suggested flow:
+
+1. Open the app.
+2. Click **Validate**.
+3. Check that the viewer shows three endpoints:
+   - `GET /products`
+   - `POST /products/add`
+   - `GET /products/{id}`
+4. Select `GET /products/{id}` and fill the `id` path parameter.
+5. Click **Generate cURL** and copy the generated command.
+6. Select `POST /products/add`, generate cURL, and check that it includes `Content-Type: application/json`.
+7. If you are signed in, execute a request and check that it appears in History.
+
 ## Supabase
 
 Migrations are stored in:
