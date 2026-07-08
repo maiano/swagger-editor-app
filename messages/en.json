@@ -82,6 +82,8 @@
     "title": "Request Console",
     "selectEndpoint": "Select an endpoint to prepare a request.",
     "description": "Build a request, copy cURL, or run it through the server proxy.",
+    "generateCurl": "Generate cURL",
+    "curlPrompt": "Generate cURL for this request.",
     "copy": "Copy",
     "copied": "Copied",
     "clipboardUnavailable": "Clipboard is unavailable.",

@@ -62,6 +62,11 @@ const IDLE_EXECUTE_STATE: ExecuteState = {
   status: "idle",
 };
 
+const IDLE_CURL_STATE = {
+  endpointId: null,
+  visible: false,
+};
+
 export function RequestConsole() {
   const t = useTranslations("RequestConsole");
   const { document, selectedEndpoint, requestDraftsByEndpointId, setRequestDraft } =
@@ -77,6 +82,10 @@ export function RequestConsole() {
     endpointId: null,
     status: "idle",
   });
+  const [curlState, setCurlState] = useState<{
+    endpointId: string | null;
+    visible: boolean;
+  }>(IDLE_CURL_STATE);
 
   if (!document || !selectedEndpoint) {
     return (
@@ -95,13 +104,20 @@ export function RequestConsole() {
   const request = createRequestModel(selectedEndpoint, draft);
   const curl = buildCurlCommand(request);
   const copyStatus = copyState.endpointId === selectedEndpointId ? copyState.status : "idle";
+  const isCurlVisible = curlState.endpointId === selectedEndpointId && curlState.visible;
   const visibleExecuteState =
     executeState.endpointId === selectedEndpointId ? executeState : IDLE_EXECUTE_STATE;
 
   function updateDraft(value: RequestDraft) {
     setCopyState({ endpointId: selectedEndpointId, status: "idle" });
+    setCurlState(IDLE_CURL_STATE);
     setExecuteState({ endpointId: null, status: "idle" });
     setRequestDraft(selectedEndpointId, value);
+  }
+
+  function generateCurl() {
+    setCopyState({ endpointId: selectedEndpointId, status: "idle" });
+    setCurlState({ endpointId: selectedEndpointId, visible: true });
   }
 
   async function copyCurl() {
@@ -164,17 +180,36 @@ export function RequestConsole() {
         <section className="grid gap-2">
           <div className="flex items-center justify-between gap-2">
             <h3 className="text-sm">cURL</h3>
-            <Button type="button" variant="outline" size="sm" onClick={copyCurl}>
-              <CopyIcon data-icon="inline-start" />
-              {copyStatus === "copied" ? t("copied") : t("copy")}
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={generateCurl}
+                disabled={isCurlVisible}
+              >
+                {t("generateCurl")}
+              </Button>
+              {isCurlVisible ? (
+                <Button type="button" variant="outline" size="sm" onClick={copyCurl}>
+                  <CopyIcon data-icon="inline-start" />
+                  {copyStatus === "copied" ? t("copied") : t("copy")}
+                </Button>
+              ) : null}
+            </div>
           </div>
           {copyStatus === "failed" ? (
             <p className="text-status-error text-xs">{t("clipboardUnavailable")}</p>
           ) : null}
-          <pre className="border-border bg-editor text-editor-foreground max-h-56 overflow-auto rounded-md border p-3 text-xs">
-            {curl}
-          </pre>
+          {isCurlVisible ? (
+            <pre className="border-border bg-editor text-editor-foreground max-h-56 overflow-auto rounded-md border p-3 text-xs">
+              {curl}
+            </pre>
+          ) : (
+            <p className="border-border bg-muted/20 text-muted-foreground rounded-md border px-3 py-2 text-xs">
+              {t("curlPrompt")}
+            </p>
+          )}
         </section>
         <Button
           type="button"

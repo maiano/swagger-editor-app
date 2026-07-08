@@ -87,13 +87,64 @@ function createDraft(overrides: Partial<RequestDraft> = {}): RequestDraft {
 }
 
 describe("RequestConsole execution", () => {
+  const originalClipboardDescriptor = Object.getOwnPropertyDescriptor(
+    globalThis.navigator,
+    "clipboard"
+  );
+
   beforeEach(() => {
     setRequestDraftMock.mockReset();
     workspaceValue = createWorkspaceValue(createDraft());
   });
 
   afterEach(() => {
+    if (originalClipboardDescriptor) {
+      Object.defineProperty(globalThis.navigator, "clipboard", originalClipboardDescriptor);
+    } else {
+      Object.defineProperty(globalThis.navigator, "clipboard", {
+        configurable: true,
+        value: undefined,
+      });
+    }
+
     vi.restoreAllMocks();
+  });
+
+  it("generates and copies a cURL command from the current request", async () => {
+    const writeTextMock = vi.fn().mockResolvedValue(undefined);
+
+    Object.defineProperty(globalThis.navigator, "clipboard", {
+      configurable: true,
+      value: {
+        writeText: writeTextMock,
+      },
+    });
+
+    renderRequestConsole();
+
+    expect(screen.queryByText(/curl -X GET/)).toBeNull();
+    expect(screen.getByText("Generate cURL for this request.")).toBeTruthy();
+
+    const generateButton = screen.getByRole("button", { name: /generate curl/i });
+
+    await userEvent.click(generateButton);
+
+    expect(await screen.findByText((content) => content.includes("/pet/10"))).toBeTruthy();
+    expect(generateButton).toHaveProperty("disabled", true);
+
+    await userEvent.click(screen.getByRole("button", { name: /copy/i }));
+
+    expect(writeTextMock).toHaveBeenCalledWith(expect.stringContaining("curl"));
+    expect(writeTextMock).toHaveBeenCalledWith(expect.stringContaining("/pet/10"));
+    expect(await screen.findByRole("button", { name: /copied/i })).toBeTruthy();
+
+    await userEvent.clear(screen.getByLabelText(/petId/i));
+    await userEvent.type(screen.getByLabelText(/petId/i), "11");
+
+    await waitFor(() => {
+      expect(screen.queryByText((content) => content.includes("curl"))).toBeNull();
+    });
+    expect(screen.getByText("Generate cURL for this request.")).toBeTruthy();
   });
 
   it("executes current request through proxy and renders formatted JSON response", async () => {
