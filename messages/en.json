@@ -122,6 +122,8 @@
   "SwaggerEditor": {
     "title": "Swagger/OpenAPI Editor",
     "validate": "Validate",
+    "jsonFormat": "JSON",
+    "yamlFormat": "YAML",
     "save": "Save",
     "saving": "Saving schema...",
     "saveSuccess": "Schema saved.",
@@ -130,6 +132,7 @@
     "validating": "Validating...",
     "ready": "Ready",
     "schemaEmptyError": "Schema text is empty",
+    "formatSwitchError": "Fix schema errors before converting to {format}.",
     "endpointCount": "{count} endpoints"
   }
 }

@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { useState } from "react";
 
 import { parseOpenApiSchema } from "@/entities/openapi-document/model";
+import { convertSchemaText, type SchemaFormat } from "@/entities/schema/model";
 import { useOpenApiWorkspace } from "@/features/openapi-workspace/model";
 import { Badge } from "@/shared/ui/badge";
 import { Button } from "@/shared/ui/button";
@@ -18,6 +19,23 @@ export function SwaggerEditor() {
   const isValidating = workspace.status === "validating";
   const [saveState, setSaveState] = useState<"idle" | "saving" | "saved" | "failed">("idle");
   const [saveError, setSaveError] = useState<string | null>(null);
+
+  function switchSchemaFormat(targetFormat: SchemaFormat) {
+    if (targetFormat === workspace.schemaFormat) {
+      return;
+    }
+
+    try {
+      const convertedText = convertSchemaText(workspace.schemaText, targetFormat);
+
+      workspace.setSchemaText(convertedText);
+      setSaveState("idle");
+      setSaveError(null);
+    } catch {
+      workspace.setStatus("invalid");
+      workspace.setError(t("formatSwitchError", { format: targetFormat.toUpperCase() }));
+    }
+  }
 
   async function validateCurrentSchema() {
     const trimmedText = workspace.schemaText.trim();
@@ -88,6 +106,12 @@ export function SwaggerEditor() {
           <Badge variant="outline" className="uppercase">
             {workspace.schemaFormat}
           </Badge>
+          <FormatSwitch
+            value={workspace.schemaFormat}
+            onChange={switchSchemaFormat}
+            jsonLabel={t("jsonFormat")}
+            yamlLabel={t("yamlFormat")}
+          />
           <Button
             type="button"
             onClick={validateCurrentSchema}
@@ -131,6 +155,56 @@ export function SwaggerEditor() {
         <SaveStatus state={saveState} error={saveError} />
       </CardContent>
     </Card>
+  );
+}
+
+function FormatSwitch({
+  jsonLabel,
+  onChange,
+  value,
+  yamlLabel,
+}: {
+  jsonLabel: string;
+  onChange: (value: SchemaFormat) => void;
+  value: SchemaFormat;
+  yamlLabel: string;
+}) {
+  return (
+    <div className="border-border bg-muted/30 inline-flex h-8 overflow-hidden rounded-md border p-0.5">
+      <FormatSwitchButton
+        active={value === "yaml"}
+        label={yamlLabel}
+        onClick={() => onChange("yaml")}
+      />
+      <FormatSwitchButton
+        active={value === "json"}
+        label={jsonLabel}
+        onClick={() => onChange("json")}
+      />
+    </div>
+  );
+}
+
+function FormatSwitchButton({
+  active,
+  label,
+  onClick,
+}: {
+  active: boolean;
+  label: string;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      aria-pressed={active}
+      disabled={active}
+      onClick={onClick}
+      className="data-[active=true]:bg-background data-[active=true]:text-foreground hover:text-foreground text-muted-foreground inline-flex min-w-12 cursor-pointer items-center justify-center rounded px-2 text-xs font-medium transition-colors disabled:cursor-default disabled:opacity-100"
+      data-active={active}
+    >
+      {label}
+    </button>
   );
 }
 
