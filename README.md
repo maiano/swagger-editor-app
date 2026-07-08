@@ -1,36 +1,152 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Swagger Editor App
 
-## Getting Started
+A small OpenAPI workspace built with Next.js and TypeScript.
 
-First, run the development server:
+The app lets you paste an OpenAPI schema, validate it, browse generated endpoints, prepare API requests, generate cURL commands, send requests through a server proxy, and view request history when signed in.
+
+Live demo:
+
+```text
+https://swagger-editor-app-eight.vercel.app/
+```
+
+## What is inside
+
+- OpenAPI editor with JSON/YAML support
+- Schema validation and formatted validation errors
+- Swagger viewer with generated endpoints
+- Request console with params, headers, body, cURL generation, copy action, and proxy execution
+- Supabase auth with sign in, sign up, and sign out
+- Saved schema for authenticated users
+- Request history and basic analytics
+- English and Russian UI
+- Unit tests and coverage config
+
+## Tech stack
+
+- Next.js 16
+- React 19
+- TypeScript
+- Supabase
+- next-intl
+- Vitest
+- Tailwind CSS
+
+## Requirements
+
+Use Node.js 24.x.
+
+For local development with `nvm`, run:
+
+```bash
+nvm install
+nvm use
+```
+
+The team uses:
+
+```bash
+node -v # v24.17.0
+npm -v  # 11.13.0
+```
+
+The repository uses `engine-strict=true`, so npm will complain if the Node major version is different.
+
+## Environment variables
+
+Copy the example file:
+
+```bash
+cp .env.example .env.local
+```
+
+Then fill in your own Supabase values in `.env.local`.
+
+## Installation
+
+Install dependencies from the lockfile:
+
+```bash
+npm ci
+```
+
+Use `npm ci` for normal setup. Use `npm install` only when you intentionally change dependencies.
+
+## Development
+
+Start the dev server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```text
+http://localhost:3000
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Supabase
 
-## Learn More
+Migrations are stored in:
 
-To learn more about Next.js, take a look at the following resources:
+```text
+supabase/migrations
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+If your Supabase project is already linked, apply migrations with:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+npx supabase migration up --linked
+```
 
-## Deploy on Vercel
+If the project is not linked yet:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+npx supabase login
+npx supabase link --project-ref <project-ref>
+npx supabase migration up --linked
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Checks
+
+Run the full local check before opening a PR:
+
+```bash
+npm run check
+```
+
+This runs formatting check, ESLint, TypeScript, and tests.
+
+Useful separate commands:
+
+```bash
+npm run format:check
+npm run lint
+npm run typecheck
+npm run test
+npm run test:coverage
+```
+
+Tests also run automatically before `git push` through Husky.
+
+## Project notes
+
+- Routes are not locale-prefixed. The language is selected in the UI and stored in a cookie.
+- Auth pages live outside the main app shell.
+- The main editor workspace state is kept while navigating between main routes during one client session.
+- Request history and saved schemas require an authenticated Supabase user.
+- The proxy route runs on the server and blocks unsafe target URLs before making requests.
+
+## Deploy
+
+The app is ready for Vercel deployment.
+
+Make sure the same environment variables are added in Vercel:
+
+```env
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=
+```
+
+The Node runtime is controlled by `package.json` and `.nvmrc`.
