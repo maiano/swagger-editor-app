@@ -1,2 +1,1 @@
-echo 'Running test...'
-echo 'If there are no tests, you need to write them'
+npm run test
