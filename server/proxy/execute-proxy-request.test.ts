@@ -73,15 +73,78 @@ describe("executeProxyRequest", () => {
     });
   });
 
+  it("adds generated JSON headers when request body and media types are known", async () => {
+    const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response("created"));
+
+    await executeProxyRequest(
+      createProxyInput({
+        method: "post",
+        requestContentType: "application/json",
+        responseContentType: "application/json",
+        body: {
+          name: "doggie",
+        },
+      })
+    );
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      expect.any(URL),
+      expect.objectContaining({
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ name: "doggie" }, null, 2),
+      })
+    );
+  });
+
+  it("lets user headers override generated proxy headers", async () => {
+    const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response("created"));
+
+    await executeProxyRequest(
+      createProxyInput({
+        method: "post",
+        requestContentType: "application/json",
+        responseContentType: "application/json",
+        headers: {
+          accept: "application/problem+json",
+          "content-type": "application/vnd.api+json",
+        },
+        body: "{}",
+      })
+    );
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      expect.any(URL),
+      expect.objectContaining({
+        headers: {
+          accept: "application/problem+json",
+          "content-type": "application/vnd.api+json",
+        },
+      })
+    );
+  });
+
   it("does not send request body for GET and HEAD", async () => {
     const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response(null));
 
-    await executeProxyRequest(createProxyInput({ body: "ignored" }));
+    await executeProxyRequest(
+      createProxyInput({
+        requestContentType: "application/json",
+        responseContentType: "application/json",
+        body: "ignored",
+      })
+    );
 
     expect(fetchMock).toHaveBeenCalledWith(
       expect.any(URL),
       expect.objectContaining({
         method: "GET",
+        headers: {
+          Accept: "application/json",
+        },
         body: undefined,
       })
     );

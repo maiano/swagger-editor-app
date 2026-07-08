@@ -9,5 +9,7 @@ export interface RequestModel {
   query: Record<string, string>;
   pathParams: Record<string, string>;
   cookies: Record<string, string>;
+  requestContentType?: string;
+  responseContentType?: string;
   body?: unknown;
 }

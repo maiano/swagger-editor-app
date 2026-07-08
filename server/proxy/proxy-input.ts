@@ -12,6 +12,8 @@ export const proxyInputSchema = z.object({
   query: stringRecordSchema.default({}),
   pathParams: stringRecordSchema.default({}),
   cookies: stringRecordSchema.default({}),
+  requestContentType: z.string().optional(),
+  responseContentType: z.string().optional(),
   body: z.unknown().optional(),
 });
 

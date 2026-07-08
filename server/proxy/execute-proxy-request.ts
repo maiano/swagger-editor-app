@@ -1,3 +1,5 @@
+import { buildRequestBody, buildRequestHeaders } from "@/entities/openapi-document/model";
+
 import type { ProxyInput } from "./proxy-input";
 import type { ProxyResult } from "./proxy-result";
 import { sanitizeProxyHeaders } from "./sanitize-proxy-headers";
@@ -5,7 +7,6 @@ import { validateTargetUrl } from "./validate-target-url";
 
 const PROXY_TIMEOUT_MS = 15_000;
 const MAX_RESPONSE_BYTES = 1_000_000;
-const BODYLESS_METHODS = new Set(["get", "head"]);
 
 export async function executeProxyRequest(input: ProxyInput): Promise<ProxyResult> {
   const targetUrl = await validateTargetUrl(input.resolvedUrl);
@@ -13,11 +14,12 @@ export async function executeProxyRequest(input: ProxyInput): Promise<ProxyResul
   const startedAt = performance.now();
   const timeoutId = setTimeout(() => controller.abort(), PROXY_TIMEOUT_MS);
   const requestBody = createRequestBody(input);
+  const requestHeaders = createRequestHeaders(input, requestBody !== undefined);
 
   try {
     const response = await fetch(targetUrl, {
       method: input.method.toUpperCase(),
-      headers: sanitizeProxyHeaders(input.headers),
+      headers: requestHeaders,
       body: requestBody,
       redirect: "manual",
       signal: controller.signal,
@@ -62,12 +64,25 @@ export async function executeProxyRequest(input: ProxyInput): Promise<ProxyResul
   }
 }
 
-function createRequestBody(input: ProxyInput): string | undefined {
-  if (BODYLESS_METHODS.has(input.method) || input.body === undefined) {
-    return undefined;
-  }
+function createRequestHeaders(input: ProxyInput, hasBody: boolean): Record<string, string> {
+  return sanitizeProxyHeaders(
+    Object.fromEntries(
+      buildRequestHeaders({
+        headers: input.headers,
+        hasBody,
+        requestContentType: input.requestContentType,
+        responseContentType: input.responseContentType,
+      })
+    )
+  );
+}
 
-  return typeof input.body === "string" ? input.body : JSON.stringify(input.body);
+function createRequestBody(input: ProxyInput): string | undefined {
+  return buildRequestBody({
+    method: input.method,
+    body: input.body,
+    contentType: input.requestContentType,
+  });
 }
 
 async function collectResponseBody(response: Response): Promise<{
