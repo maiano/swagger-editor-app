@@ -1,43 +1,43 @@
 import { shellEscape } from "@/shared/lib/shell-escape";
 
+import { buildRequestBody } from "./build-request-body";
+import { buildRequestHeaders } from "./build-request-headers";
 import type { RequestModel } from "./request-model";
 
 export function buildCurlCommand(request: RequestModel): string {
-  const parts = ["curl", "-X", shellEscape(request.method.toUpperCase())];
+  const lines = ["curl \\"];
+  const body = buildRequestBody({
+    method: request.method,
+    body: request.body,
+    contentType: request.requestContentType,
+  });
+  const headers = buildRequestHeaders({
+    headers: request.headers,
+    hasBody: body !== undefined,
+    requestContentType: request.requestContentType,
+    responseContentType: request.responseContentType,
+  });
 
-  for (const [name, value] of Object.entries(request.headers)) {
-    if (!name || !value) {
-      continue;
-    }
+  lines.push(`  -X ${request.method.toUpperCase()} \\`);
+  lines.push(`  ${shellEscape(request.resolvedUrl)} \\`);
 
-    parts.push("-H", shellEscape(`${name}: ${value}`));
+  for (const [name, value] of headers) {
+    lines.push(`  -H ${shellEscape(`${name}: ${value}`)} \\`);
   }
-
-  const body = serializeRequestBody(request.body);
 
   if (body !== undefined) {
-    if (!hasHeader(request.headers, "content-type")) {
-      parts.push("-H", shellEscape("Content-Type: application/json"));
-    }
-
-    parts.push("--data", shellEscape(body));
+    lines.push(`  ${getBodyFlag(request.requestContentType)} ${shellEscape(body)} \\`);
   }
 
-  parts.push(shellEscape(request.resolvedUrl));
-
-  return parts.join(" \\\n  ");
+  return lines
+    .map((line, index) => (index === lines.length - 1 ? line.replace(/ \\$/, "") : line))
+    .join("\n");
 }
 
-function serializeRequestBody(body: unknown): string | undefined {
-  if (body === undefined || body === null) {
-    return undefined;
-  }
-
-  return typeof body === "string" ? body : JSON.stringify(body);
+function getBodyFlag(contentType: string | undefined): string {
+  return isJsonContentType(contentType) ? "--data-raw" : "--data";
 }
 
-function hasHeader(headers: Record<string, string>, headerName: string): boolean {
-  const normalizedHeaderName = headerName.toLowerCase();
-
-  return Object.keys(headers).some((name) => name.toLowerCase() === normalizedHeaderName);
+function isJsonContentType(contentType: string | undefined): boolean {
+  return contentType?.toLowerCase().includes("json") ?? false;
 }

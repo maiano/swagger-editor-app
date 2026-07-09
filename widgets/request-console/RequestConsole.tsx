@@ -7,6 +7,8 @@ import { useTranslations } from "next-intl";
 import {
   buildCurlCommand,
   type OpenApiEndpoint,
+  type OpenApiRequestBody,
+  type OpenApiResponse,
   type RequestModel,
 } from "@/entities/openapi-document/model";
 import { useOpenApiWorkspace } from "@/features/openapi-workspace/model";
@@ -421,6 +423,7 @@ function createRequestModel(endpoint: OpenApiEndpoint, draft: RequestDraft): Req
   const query = removeEmptyValues(draft.query);
   const resolvedUrl = appendQueryString(`${baseUrl}${path}`, query);
   const body = draft.bodyText.trim().length > 0 ? draft.bodyText : undefined;
+  const requestContentType = getPreferredRequestContentType(endpoint.requestBody);
 
   return {
     endpointId: endpoint.id,
@@ -431,8 +434,32 @@ function createRequestModel(endpoint: OpenApiEndpoint, draft: RequestDraft): Req
     query,
     pathParams: removeEmptyValues(draft.pathParams),
     cookies: {},
+    requestContentType,
+    responseContentType: getPreferredResponseContentType(endpoint.responses),
     body,
   };
+}
+
+function getPreferredRequestContentType(requestBody: OpenApiRequestBody | undefined) {
+  if (!requestBody) {
+    return undefined;
+  }
+
+  return getPreferredContentType(Object.keys(requestBody.content));
+}
+
+function getPreferredResponseContentType(responses: OpenApiResponse[]) {
+  const contentTypes = responses.flatMap((response) => Object.keys(response.content ?? {}));
+
+  return getPreferredContentType(contentTypes);
+}
+
+function getPreferredContentType(contentTypes: string[]) {
+  return contentTypes.find(isJsonContentType) ?? contentTypes[0];
+}
+
+function isJsonContentType(contentType: string) {
+  return contentType.toLowerCase().includes("json");
 }
 
 function createEmptyParameterValues(

@@ -1,4 +1,6 @@
 export * from "./build-curl-command";
+export * from "./build-request-body";
+export * from "./build-request-headers";
 export * from "./detect-openapi-version";
 export * from "./errors";
 export * from "./normalize-common";
