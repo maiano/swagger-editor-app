@@ -9,8 +9,9 @@ import { createClient } from "@/shared/lib/supabase/client";
 import { FieldError, FieldLabel } from "@/shared/ui/field";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/shared/ui/input-group";
 import { Button } from "@/shared/ui/button";
-import { MailIcon } from "lucide-react";
+import { ArrowLeftIcon, MailIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
+import Link from "next/link";
 
 export default function SignUpComponent() {
   const t = useTranslations("ValidationForms");
@@ -50,6 +51,13 @@ export default function SignUpComponent() {
   return (
     <div className="flex min-h-screen items-center justify-center">
       <div className="w-full max-w-sm gap-6 rounded-lg border p-6 shadow-lg">
+        <Link
+          href="/"
+          className="text-muted-foreground hover:text-foreground absolute top-4 left-4 flex items-center gap-1 text-sm"
+        >
+          <ArrowLeftIcon className="h-4 w-4" />
+          {t("back")}
+        </Link>
         <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
           <h3>{t("signUp.title")}</h3>
           <FieldLabel htmlFor="login">{t("login")}</FieldLabel>
