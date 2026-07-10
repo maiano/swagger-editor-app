@@ -159,6 +159,7 @@ Tests also run automatically before `git push` through Husky.
 - Auth pages live outside the main app shell.
 - The main editor workspace state is kept while navigating between main routes during one client session.
 - Request history and saved schemas require an authenticated Supabase user.
+- In History, HTTP `4xx/5xx` responses are shown in `Status`; `Proxy error` is filled only when the proxy cannot get a response, for example timeout or network failure.
 - The proxy route runs on the server and blocks unsafe target URLs before making requests.
 
 ## Deploy
