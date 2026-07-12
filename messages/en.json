@@ -41,7 +41,7 @@
       "status": "Status",
       "duration": "Duration",
       "size": "Size",
-      "error": "Error"
+      "error": "Proxy error"
     },
     "failed": "Failed",
     "none": "None",
