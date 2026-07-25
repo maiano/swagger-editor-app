@@ -5,6 +5,27 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/sha
 
 const technologies = ["Next.js", "TypeScript", "Tailwind CSS", "Supabase", "Vitest", "shadcn/ui"];
 
+const teamMembers = [
+  {
+    name: "Aleksei",
+    roleKey: "teamLead",
+    githubUrl: "https://github.com/maiano",
+    githubLabel: "github.com/maiano",
+  },
+  {
+    name: "Katya",
+    roleKey: "developer",
+    githubUrl: "https://github.com/KatherinaSl",
+    githubLabel: "github.com/KatherinaSl",
+  },
+  {
+    name: "Dilafruz",
+    roleKey: "developer",
+    githubUrl: "https://github.com/Dilafruz-17",
+    githubLabel: "github.com/Dilafruz-17",
+  },
+] as const;
+
 export default async function AboutPage() {
   const t = await getTranslations("AboutPage");
 
@@ -39,53 +60,23 @@ export default async function AboutPage() {
       <section>
         <h2 className="mb-8">{t("teamTitle")}</h2>
         <div className="grid gap-4 md:grid-cols-3">
-          <Card>
-            <CardHeader>
-              <CardTitle>Aleksei</CardTitle>
-              <CardDescription>{t("teamLead")}</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Link
-                href="https://github.com/maiano"
-                target="_blank"
-                className="text-primary text-sm hover:underline"
-              >
-                github.com/maiano
-              </Link>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Katya</CardTitle>
-              <CardDescription>{t("developer")}</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Link
-                href="https://github.com/KatherinaSl"
-                target="_blank"
-                className="text-primary text-sm hover:underline"
-              >
-                github.com/KatherinaSl
-              </Link>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Dilafruz</CardTitle>
-              <CardDescription>{t("developer")}</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Link
-                href="https://github.com/Dilafruz-17"
-                target="_blank"
-                className="text-primary text-sm hover:underline"
-              >
-                github.com/Dilafruz-17
-              </Link>
-            </CardContent>
-          </Card>
+          {teamMembers.map((member) => (
+            <Card key={member.githubUrl}>
+              <CardHeader>
+                <CardTitle>{member.name}</CardTitle>
+                <CardDescription>{t(member.roleKey)}</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Link
+                  href={member.githubUrl}
+                  target="_blank"
+                  className="text-primary text-sm hover:underline"
+                >
+                  {member.githubLabel}
+                </Link>
+              </CardContent>
+            </Card>
+          ))}
         </div>
       </section>
     </section>
