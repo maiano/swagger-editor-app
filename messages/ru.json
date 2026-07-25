@@ -1,0 +1,141 @@
+{
+  "RootLayout": {
+    "title": "Интерфейс Swagger/OpenAPI"
+  },
+  "Common": {
+    "appName": "Интерфейс Swagger/OpenAPI",
+    "signIn": "Войти",
+    "signUp": "Регистрация",
+    "signOut": "Выйти",
+    "history": "История",
+    "about": "О проекте",
+    "editor": "Редактор"
+  },
+  "AboutPage": {
+    "pageTitle": "О проекте",
+    "schoolTitle": "RS School",
+    "projectTitle": "Проект",
+    "technologiesTitle": "Технологии",
+    "teamTitle": "Наша команда",
+    "schoolDescription": "Этот проект создан в рамках курса RS School — бесплатного сообщества JavaScript и frontend-образования.",
+    "projectDescription": "Редактор Swagger/OpenAPI и REST-клиент для исследования и тестирования API. Создан с помощью Next.js, TypeScript, Tailwind CSS и Supabase.",
+    "teamLead": "Руководитель команды",
+    "developer": "Разработчик"
+  },
+  "Footer": {
+    "about": "О проекте"
+  },
+  "HistoryPage": {
+    "title": "История запросов",
+    "description": "Серверная история запросов для {userName}.",
+    "emptyTitle": "Запросов пока нет",
+    "emptyDescription": "Выполните запрос из редактора, и он появится здесь.",
+    "openEditor": "Открыть редактор",
+    "openViewer": "Открыть viewer",
+    "requestsTitle": "Запросы",
+    "recordedRequests": "Записано запросов: {count}.",
+    "columns": {
+      "time": "Время",
+      "method": "Метод",
+      "endpoint": "Endpoint",
+      "status": "Статус",
+      "duration": "Длительность",
+      "size": "Размер",
+      "error": "Ошибка proxy"
+    },
+    "failed": "Ошибка",
+    "none": "Нет",
+    "previous": "Назад",
+    "previousPage": "Предыдущая страница",
+    "next": "Вперед",
+    "nextPage": "Следующая страница",
+    "pageIndicator": "Страница {page} из {totalPages}"
+  },
+  "ValidationForms": {
+    "signIn": {
+      "title": "Вход",
+      "submit": "Войти"
+    },
+    "signUp": {
+      "title": "Регистрация",
+      "submit": "Зарегистрироваться"
+    },
+    "back": "Вернуться",
+    "login": "Логин",
+    "email": "Электронная почта",
+    "password": "Пароль",
+    "confirmPassword": "Подтвердите пароль",
+    "loginPlaceholder": "Введите логин",
+    "emailPlaceholder": "Введите свою электронную почту",
+    "passwordPlaceholder": "Введите пароль",
+    "confirmPasswordPlaceholder": "Пожалуйста, подтвердите пароль",
+    "errorGeneric": "Произошла ошибка",
+    "validation": {
+      "loginRequired": "Логин обязателен",
+      "invalidEmail": "Введите корректный адрес электронной почты",
+      "passwordRequired": "Пароль обязателен",
+      "passwordMin": "Пароль должен содержать минимум 8 символов",
+      "passwordComplexity": "Пароль должен содержать минимум одну букву, одну цифру и один специальный символ",
+      "passwordMismatch": "Пароли не совпадают"
+    }
+  },
+  "RequestConsole": {
+    "title": "Консоль запросов",
+    "selectEndpoint": "Выберите конечную точку API для подготовки запроса.",
+    "description": "Соберите запрос, скопируйте cURL или выполните его через серверный proxy.",
+    "generateCurl": "Сгенерировать cURL",
+    "curlPrompt": "Сгенерируйте cURL для этого запроса.",
+    "copy": "Копировать",
+    "copied": "Скопировано",
+    "clipboardUnavailable": "Буфер обмена недоступен.",
+    "executing": "Выполняется",
+    "execute": "Выполнить",
+    "executeProxy": "Выполняется через серверный прокси...",
+    "executePrompt": "Выполните запрос, чтобы увидеть ответ прокси.",
+    "requestFailedBeforeProxy": "Выполнение запроса не удалось до достижения прокси.",
+    "proxyError": "Запрос к прокси не выполнен.",
+    "emptyResponse": "(пустой ответ)",
+    "duration": "{duration} мс",
+    "bytes": "{bytes} байт",
+    "truncated": "усечено"
+  },
+  "HttpRequest": {
+    "noParametersOrRequestBody": "Нет параметров или тела запроса.",
+    "requestBody": "Тело запроса",
+    "responses": "Ответы",
+    "parameters": "Параметры",
+    "deprecated": "Устарело",
+    "noParameters": "Нет параметров.",
+    "noRequestBody": "Нет тела запроса.",
+    "noResponses": "Нет ответов.",
+    "required": "обязательный",
+    "body": "Тело запроса",
+    "path": "Параметры пути",
+    "query": "Параметры строки запроса",
+    "headers": "Заголовки запроса"
+  },
+  "SwaggerViewer": {
+    "viewer": "Средство просмотра",
+    "viewerDescription": "Проверьте схему Swagger/OpenAPI, чтобы просмотреть конечные точки.",
+    "noEndpoints": "В этой схеме не найдены конечные точки.",
+    "noContentSchema": "Схема не определена",
+    "noSchemaExamples": "Нет схемы или примеров для {contentType}.",
+    "schemaOverview": "v{version} · {count} конечных точек"
+  },
+  "SwaggerEditor": {
+    "title": "Редактор Swagger/OpenAPI",
+    "validate": "Проверить",
+    "jsonFormat": "JSON",
+    "yamlFormat": "YAML",
+    "save": "Сохранить",
+    "saving": "Сохраняем схему...",
+    "saveSuccess": "Схема сохранена.",
+    "saveFailed": "Не удалось сохранить схему.",
+    "saveNetworkError": "Не удалось подключиться к endpoint сохранения схемы.",
+    "validating": "Проверяется...",
+    "ready": "Готово",
+    "schemaEmptyError": "Текст схемы пуст",
+    "formatSwitchError": "Исправьте ошибки схемы перед конвертацией в {format}.",
+    "endpointCount": "{count} конечных точек"
+  }
+}

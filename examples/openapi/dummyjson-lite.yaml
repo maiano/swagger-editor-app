@@ -1,0 +1,148 @@
+openapi: 3.0.3
+
+info:
+  title: DummyJSON Lite
+  version: 1.0.0
+  description: |
+    Small OpenAPI schema for demonstrating the Swagger Editor App.
+    Based on the public DummyJSON API.
+
+servers:
+  - url: https://dummyjson.com
+
+tags:
+  - name: products
+
+paths:
+  /products:
+    get:
+      tags:
+        - products
+      summary: Get products
+      operationId: getProducts
+      responses:
+        "200":
+          description: Product list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductList"
+
+  /products/add:
+    post:
+      tags:
+        - products
+      summary: Create product
+      operationId: createProduct
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NewProduct"
+            example:
+              title: BMW Pencil
+              description: A demo product.
+              category: stationery
+              price: 9.99
+      responses:
+        "200":
+          description: Product created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+
+  /products/{id}:
+    get:
+      tags:
+        - products
+      summary: Get product by id
+      operationId: getProduct
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 1
+      responses:
+        "200":
+          description: Product
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+
+        "404":
+          description: Product not found
+
+components:
+  schemas:
+    ProductList:
+      type: object
+      properties:
+        products:
+          type: array
+          items:
+            $ref: "#/components/schemas/Product"
+        total:
+          type: integer
+          example: 194
+        skip:
+          type: integer
+          example: 0
+        limit:
+          type: integer
+          example: 30
+
+    Product:
+      type: object
+      required:
+        - id
+        - title
+      properties:
+        id:
+          type: integer
+          example: 1
+
+        title:
+          type: string
+          example: iPhone 15
+
+        description:
+          type: string
+          example: Latest Apple smartphone.
+
+        category:
+          type: string
+          example: smartphones
+
+        price:
+          type: number
+          example: 999.99
+
+        stock:
+          type: integer
+          example: 15
+
+    NewProduct:
+      type: object
+      required:
+        - title
+      properties:
+        title:
+          type: string
+          example: iPhone 15
+
+        description:
+          type: string
+          example: Latest Apple smartphone.
+
+        category:
+          type: string
+          example: smartphones
+
+        price:
+          type: number
+          example: 999.99
